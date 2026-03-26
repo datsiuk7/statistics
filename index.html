@@ -976,6 +976,7 @@ function updateKPIs() {
     contract += rowContract(r);
     full += rowFull(r);
     part += rowPart(r);
+    even +=  rowEven(r);
     specs.add(r[2]+r[3]);
   });
   const pctB = total ? Math.round(budget/total*100) : 0;
