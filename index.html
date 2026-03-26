@@ -461,9 +461,9 @@ body {
       </div>
       <div class="kpi-card teal">
         <div class="kpi-icon"><i class="bi bi-moon-stars-fill"></i></div>
-        <div class="kpi-value" id="kpiPart">—</div>
+        <div class="kpi-value" id="kpiEvent">—</div>
         <div class="kpi-label">Вечірня форма</div>
-        <div class="kpi-sub" id="kpiPartSub"></div>
+        <div class="kpi-sub" id="kpiEvenSub"></div>
       </div>
       <div class="kpi-card red">
         <div class="kpi-icon"><i class="bi bi-journal-bookmark-fill"></i></div>
@@ -992,6 +992,7 @@ function updateKPIs() {
   document.getElementById('kpiBudgetSub').textContent = pctB + '% від загального';
   document.getElementById('kpiContractSub').textContent = pctC + '% від загального';
   document.getElementById('kpiFullSub').textContent = pctF + '% від загального';
+  document.getElementById('kpiEvenSub').textContent = pctE + '% від загального'; 
   document.getElementById('kpiPartSub').textContent = pctP + '% від загального';
   document.getElementById('kpiSpecSub').textContent = 'унікальних';
 }
