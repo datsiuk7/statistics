@@ -3,39 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Детальна таблиця — Волинська область</title>
+<title>Детальна таблиця — ВНУ імені Лесі Українки</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script src="data.js"></script>
 <style>
-:root{--pr:#2c3e8c;--pr-d:#1e2d6b;--pr-l:#e8ebf7;--sw:260px}
+:root{--pr:#822020;--pr-d:#5c1010;--pr-l:#f9eaea;--acc:#C8A217;--acc-l:#fdf7e2;--sw:272px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2e;display:flex;min-height:100vh}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f4f7;color:#1a1a2e;display:flex;min-height:100vh}
 
 /* sidebar */
-.sidebar{width:var(--sw);height:100vh;background:linear-gradient(180deg,var(--pr-d),var(--pr));position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.25);overflow:hidden}
-.sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
-.sb-logo .ico{width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin-bottom:10px}
-.sb-logo h2{color:#fff;font-size:14px;font-weight:700;line-height:1.3}
-.sb-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:3px}
-.sb-nav{padding:12px 0;flex:1;overflow-y:auto;overflow-x:hidden}
+.sidebar{width:var(--sw);height:100vh;background:linear-gradient(175deg,var(--pr-d) 0%,var(--pr) 100%);position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.28);overflow:hidden}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb-logo .ico{width:44px;height:44px;background:rgba(255,255,255,.13);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--acc);margin-bottom:10px}
+.sb-logo h2{color:#fff;font-size:13.5px;font-weight:700;line-height:1.35}
+.sb-logo p{color:rgba(255,255,255,.5);font-size:11px;margin-top:3px}
+.sb-nav{padding:10px 0;flex:1;overflow-y:auto;overflow-x:hidden}
 .sb-nav::-webkit-scrollbar{width:3px}
 .sb-nav::-webkit-scrollbar-track{background:transparent}
 .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
-.nav-lbl{color:rgba(255,255,255,.4);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 20px 6px}
+.nav-lbl{color:rgba(255,255,255,.38);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 20px 5px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
 .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
-.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;border-left-color:#7eb3f5}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;border-left-color:var(--acc)}
 .nav-item i{font-size:16px;width:20px;text-align:center}
-.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);font-size:11px}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-size:11px;flex-shrink:0}
+/* snapshot list */
+.snap-item{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 20px;cursor:pointer;border-left:3px solid transparent;transition:all .2s;color:rgba(255,255,255,.65);font-size:13px;user-select:none}
+.snap-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.snap-item.active{background:rgba(255,255,255,.13);color:#fff;font-weight:600;border-left-color:var(--acc)}
+.snap-item i{font-size:13px;flex-shrink:0;width:18px;text-align:center}
+.snap-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snap-del{margin-left:auto;width:20px;height:20px;background:transparent;border:none;color:rgba(255,255,255,.35);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;padding:0;transition:all .2s}
+.snap-del:hover{background:rgba(220,50,50,.35);color:#ffaaaa}
+/* actions */
 .sb-upload{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none;width:100%}
-.sb-upload:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(100,200,120,.6)}
+.sb-upload:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(200,162,23,.6)}
 .sb-upload i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .sb-upload span{font-size:13.5px;font-weight:500}
 .sb-upload input{display:none}
 .sb-reset{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,130,130,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
 .sb-reset:hover{background:rgba(255,255,255,.08);color:rgba(255,160,160,1);border-left-color:rgba(255,100,100,.5)}
-.custom-badge{display:inline-block;background:#27ae60;color:#fff;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px}
+.sb-reset i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.custom-badge{display:inline-block;background:var(--acc);color:#3a2800;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px;font-weight:700}
 
 /* main */
 .main{margin-left:var(--sw);flex:1;min-height:100vh}
@@ -45,8 +55,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
 .btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:all .2s;white-space:nowrap}
 .btn-pr{background:var(--pr);color:#fff}.btn-pr:hover{background:var(--pr-d)}
 .btn-gr{background:#27ae60;color:#fff}.btn-gr:hover{background:#1e8449}
-.btn-or{background:#e67e22;color:#fff}.btn-or:hover{background:#ca6f1e}
-.btn-lt{background:#e8ebf7;color:var(--pr)}.btn-lt:hover{background:#d0d5ea}
+.btn-or{background:var(--acc);color:#3a2800}.btn-or:hover{background:#b08e10}
+.btn-lt{background:var(--pr-l);color:var(--pr)}.btn-lt:hover{background:#f0d8d8}
 .btn-red{background:#fdedec;color:#c0392b}.btn-red:hover{background:#f5b7b1}
 .pg{padding:20px 24px 40px}
 
@@ -124,35 +134,39 @@ tr.editing td{background:#fffde7 !important}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
-    <h2>Волинська область</h2>
-    <p>Статистика освіти</p>
+    <h2>ВНУ імені Лесі Українки</h2>
+    <p>Статистика здобувачів освіти</p>
   </div>
   <nav class="sb-nav">
-    <div class="nav-lbl">Здобувачі освіти</div>
+    <div class="nav-lbl">Навігація</div>
     <a class="nav-item" href="index.html"><i class="bi bi-bar-chart-line-fill"></i> Загальна статистика</a>
     <a class="nav-item active" href="table.html">
       <i class="bi bi-table"></i> Детальна таблиця
       <span id="customBadge" class="custom-badge" style="display:none">змін.</span>
     </a>
 
-    <div class="nav-lbl">Дані</div>
-    <label class="sb-upload" title="Завантажити Excel">
+    <div class="nav-lbl">Знімки даних</div>
+    <div id="snapList"></div>
+
+    <div class="nav-lbl">Дії</div>
+    <label class="sb-upload" title="Додати знімок з Excel файлу">
       <input type="file" id="xlUpload" accept=".xlsx,.xls">
-      <i class="bi bi-file-earmark-arrow-up"></i>
-      <span>Завантажити Excel</span>
+      <i class="bi bi-plus-circle"></i>
+      <span>Додати знімок</span>
     </label>
     <a class="sb-reset" href="#" onclick="doReset(event)">
-      <i class="bi bi-arrow-counterclockwise" style="font-size:16px;width:20px;text-align:center;flex-shrink:0"></i>
+      <i class="bi bi-arrow-counterclockwise"></i>
       <span>Скинути до оригіналу</span>
     </a>
   </nav>
-  <div class="sb-footer">© Волинська ОДА, 2026</div>
+  <div class="sb-footer">© ВНУ ім. Лесі Українки, 2026</div>
 </aside>
 
 <div class="main">
   <header class="topbar">
     <h1><i class="bi bi-table" style="margin-right:7px;opacity:.6"></i>Реєстр здобувачів освіти</h1>
     <div class="tb-actions">
+      <span style="background:var(--acc-l);color:#5a3d00;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid rgba(200,162,23,.3);display:flex;align-items:center;gap:6px"><i class="bi bi-calendar3"></i><span id="activeLabel">01.01.2026</span></span>
       <button class="btn btn-gr" onclick="toggleAddForm()"><i class="bi bi-plus-lg"></i> Додати рядок</button>
       <button class="btn btn-lt" onclick="exportExcel()"><i class="bi bi-file-earmark-arrow-down"></i> Зберегти Excel</button>
     </div>
@@ -260,14 +274,50 @@ tr.editing td{background:#fffde7 !important}
 
 <script>
 // ── state ─────────────────────────────────────────────────────────────────────
+const SNAP_COLORS = ['#822020','#C8A217','#27ae60','#2980b9','#8e44ad','#16a085','#e74c3c','#d35400'];
 let allData = getData();
 let filtered = [];
 let sortKey = null, sortDir = 1;
 let curPage = 1;
 const PAGE = 50;
-let editingIdx = null; // global index in allData of the row being edited
+let editingIdx = null;
 
 if (hasCustomData()) document.getElementById('customBadge').style.display = '';
+
+// ── snapshot list ─────────────────────────────────────────────────────────────
+function renderSnapList() {
+  const snaps = getAllSnapshots();
+  const activeId = getActiveId();
+  const el = document.getElementById('snapList');
+  el.innerHTML = snaps.map((s, idx) => {
+    const canDel = snaps.length > 1 || !!localStorage.getItem(SNAP_KEY);
+    return `<div class="snap-item${s.id === activeId ? ' active' : ''}" onclick="switchSnap('${s.id}')">
+      <i class="bi bi-calendar3" style="color:${idx < SNAP_COLORS.length ? SNAP_COLORS[idx] : '#aaa'};opacity:.9"></i>
+      <span class="snap-lbl">${s.label}</span>
+      ${canDel ? `<button class="snap-del" onclick="event.stopPropagation();deleteSnap('${s.id}')" title="Видалити"><i class="bi bi-x"></i></button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function switchSnap(id) {
+  setActiveId(id);
+  allData = getData();
+  editingIdx = null;
+  document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+  renderSnapList();
+  applyFilters();
+}
+
+function deleteSnap(id) {
+  const snap = getAllSnapshots().find(s => s.id === id);
+  if (!confirm(`Видалити знімок «${snap?.label || id}»?`)) return;
+  deleteSnapshot(id);
+  allData = getData();
+  editingIdx = null;
+  if (!hasCustomData()) document.getElementById('customBadge').style.display = 'none';
+  renderSnapList();
+  applyFilters();
+}
 
 // ── toast ─────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'ok') {
@@ -277,14 +327,22 @@ function toast(msg, type = 'ok') {
   setTimeout(() => el.className = 'toast', 2500);
 }
 
-// ── Excel upload ──────────────────────────────────────────────────────────────
+// ── Excel upload (додає новий знімок) ─────────────────────────────────────────
+function guessDateFromName(name) {
+  const m = name.match(/(\d{2})[._\-](\d{2})[._\-](\d{4})/);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : '';
+}
+function labelToIso(label) {
+  const m = label.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  return m ? `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}` : label;
+}
+
 document.getElementById('xlUpload').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const msg = hasCustomData()
-    ? 'Увага! У вас є змінені дані (включно з ручними правками).\nЗавантаження нового файлу ЗАМІНИТЬ всі поточні дані.\n\nПродовжити?'
-    : 'Завантаження нового Excel замінить поточні дані. Продовжити?';
-  if (!confirm(msg)) { e.target.value = ''; return; }
+  const guessed = guessDateFromName(file.name);
+  const label = prompt('Введіть дату цього знімку (наприклад: 01.03.2026):', guessed);
+  if (!label || !label.trim()) { e.target.value = ''; return; }
   const reader = new FileReader();
   reader.onload = function(ev) {
     try {
@@ -302,11 +360,16 @@ document.getElementById('xlUpload').addEventListener('change', function(e) {
           +r[7]||0, +r[8]||0, +r[9]||0, +r[10]||0, +r[11]||0, +r[12]||0
         ]);
       }
-      if (!parsed.length) { alert('Файл не містить даних або має інший формат.'); return; }
-      saveData(parsed);
-      alert('Завантажено ' + parsed.length + ' рядків. Сторінку буде оновлено.');
-      location.reload();
-    } catch(err) { alert('Помилка читання файлу: ' + err.message); }
+      if (!parsed.length) { alert('Файл не містить даних або має інший формат.'); e.target.value=''; return; }
+      addSnapshot(label.trim(), labelToIso(label.trim()), parsed);
+      allData = getData();
+      editingIdx = null;
+      document.getElementById('customBadge').style.display = '';
+      renderSnapList();
+      applyFilters();
+      toast('Знімок «' + label.trim() + '» додано', 'ok');
+      e.target.value = '';
+    } catch(err) { alert('Помилка читання файлу: ' + err.message); e.target.value=''; }
   };
   reader.readAsArrayBuffer(file);
 });
@@ -554,6 +617,8 @@ function deleteRow(idx) {
 }
 
 // ── init ──────────────────────────────────────────────────────────────────────
+document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+renderSnapList();
 applyFilters();
 </script>
 </body>

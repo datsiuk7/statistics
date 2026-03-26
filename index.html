@@ -3,66 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Здобувачі освіти — Волинська область</title>
+<title>Здобувачі освіти — ВНУ імені Лесі Українки</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script src="data.js"></script>
 <style>
-:root{--pr:#2c3e8c;--pr-d:#1e2d6b;--pr-l:#e8ebf7;--sw:260px}
+:root{--pr:#822020;--pr-d:#5c1010;--pr-l:#f9eaea;--acc:#C8A217;--acc-l:#fdf7e2;--sw:272px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2e;display:flex;min-height:100vh}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f4f7;color:#1a1a2e;display:flex;min-height:100vh}
 
-/* sidebar */
-.sidebar{width:var(--sw);height:100vh;background:linear-gradient(180deg,var(--pr-d),var(--pr));position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.25);overflow:hidden}
-.sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
-.sb-logo .ico{width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin-bottom:10px}
-.sb-logo h2{color:#fff;font-size:14px;font-weight:700;line-height:1.3}
-.sb-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:3px}
-.sb-nav{padding:12px 0;flex:1;overflow-y:auto;overflow-x:hidden}
+/* ── sidebar ── */
+.sidebar{width:var(--sw);height:100vh;background:linear-gradient(175deg,var(--pr-d) 0%,var(--pr) 100%);position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.28);overflow:hidden}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb-logo .ico{width:44px;height:44px;background:rgba(255,255,255,.13);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--acc);margin-bottom:10px}
+.sb-logo h2{color:#fff;font-size:13.5px;font-weight:700;line-height:1.35}
+.sb-logo p{color:rgba(255,255,255,.5);font-size:11px;margin-top:3px}
+
+.sb-nav{padding:10px 0;flex:1;overflow-y:auto;overflow-x:hidden}
 .sb-nav::-webkit-scrollbar{width:3px}
 .sb-nav::-webkit-scrollbar-track{background:transparent}
 .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
-.nav-lbl{color:rgba(255,255,255,.4);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 20px 6px}
+
+.nav-lbl{color:rgba(255,255,255,.38);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 20px 5px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
 .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
-.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;border-left-color:#7eb3f5}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;border-left-color:var(--acc)}
 .nav-item i{font-size:16px;width:20px;text-align:center}
-.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);font-size:11px}
 
-/* sidebar data actions */
+/* snapshot list */
+.snap-item{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 20px;cursor:pointer;border-left:3px solid transparent;transition:all .2s;color:rgba(255,255,255,.65);font-size:13px;user-select:none}
+.snap-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.snap-item.active{background:rgba(255,255,255,.13);color:#fff;font-weight:600;border-left-color:var(--acc)}
+.snap-item i{font-size:13px;flex-shrink:0;width:18px;text-align:center}
+.snap-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snap-del{margin-left:auto;width:20px;height:20px;background:transparent;border:none;color:rgba(255,255,255,.35);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;padding:0;transition:all .2s}
+.snap-del:hover{background:rgba(220,50,50,.35);color:#ffaaaa}
+.snap-empty{padding:10px 20px;color:rgba(255,255,255,.35);font-size:12px;font-style:italic}
+
+/* sidebar actions */
 .sb-upload{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none;width:100%}
-.sb-upload:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(100,200,120,.6)}
+.sb-upload:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(200,162,23,.6)}
 .sb-upload i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .sb-upload span{font-size:13.5px;font-weight:500}
 .sb-upload input{display:none}
 .sb-reset{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,130,130,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
 .sb-reset:hover{background:rgba(255,255,255,.08);color:rgba(255,160,160,1);border-left-color:rgba(255,100,100,.5)}
-.custom-badge{display:inline-block;background:#27ae60;color:#fff;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px}
+.sb-reset i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 
-/* main */
+.custom-badge{display:inline-block;background:var(--acc);color:#3a2800;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px;font-weight:700}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-size:11px;flex-shrink:0}
+
+/* ── main ── */
 .main{margin-left:var(--sw);flex:1;min-height:100vh}
-.topbar{background:#fff;padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.07);position:sticky;top:0;z-index:50}
-.topbar h1{font-size:17px;font-weight:700;color:var(--pr)}
-.date-badge{background:var(--pr-l);color:var(--pr);font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
+.topbar{background:#fff;padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.07);position:sticky;top:0;z-index:50;gap:12px}
+.topbar h1{font-size:16px;font-weight:700;color:var(--pr)}
+.snap-badge{background:var(--acc-l);color:#5a3d00;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;border:1px solid rgba(200,162,23,.3)}
 .pg{padding:24px 28px 40px}
 
-/* kpi */
+/* ── kpi ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:16px;margin-bottom:22px}
 .kpi{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
-.kpi.c1::before{background:linear-gradient(90deg,#2c3e8c,#4a90d9)}
+.kpi.c1::before{background:linear-gradient(90deg,#822020,#b03030)}
 .kpi.c2::before{background:linear-gradient(90deg,#27ae60,#2ecc71)}
-.kpi.c3::before{background:linear-gradient(90deg,#e67e22,#f39c12)}
+.kpi.c3::before{background:linear-gradient(90deg,#C8A217,#e6bc24)}
 .kpi.c4::before{background:linear-gradient(90deg,#8e44ad,#9b59b6)}
 .kpi.c5::before{background:linear-gradient(90deg,#16a085,#1abc9c)}
 .kpi.c6::before{background:linear-gradient(90deg,#2980b9,#3498db)}
 .kpi.c7::before{background:linear-gradient(90deg,#c0392b,#e74c3c)}
 .kpi-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px}
-.kpi.c1 .kpi-ico{background:#e8ebf7;color:#2c3e8c}
+.kpi.c1 .kpi-ico{background:#f9eaea;color:#822020}
 .kpi.c2 .kpi-ico{background:#eafaf1;color:#27ae60}
-.kpi.c3 .kpi-ico{background:#fef5e7;color:#e67e22}
+.kpi.c3 .kpi-ico{background:var(--acc-l);color:#7a5c00}
 .kpi.c4 .kpi-ico{background:#f5eef8;color:#8e44ad}
 .kpi.c5 .kpi-ico{background:#e8f8f5;color:#16a085}
 .kpi.c6 .kpi-ico{background:#ebf5fb;color:#2980b9}
@@ -71,7 +85,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
 .kpi-lbl{font-size:12px;color:#888;margin-top:4px;font-weight:500}
 .kpi-sub{font-size:11px;color:#aaa;margin-top:3px}
 
-/* charts */
+/* ── charts ── */
 .charts-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:22px}
 .charts-grid-2{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:22px}
 .chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
@@ -79,7 +93,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
 .cs{font-size:11px;color:#aaa;margin-bottom:14px}
 .cw{position:relative}
 
-/* filter bar */
+/* ── filter bar ── */
 .fbar{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .fg{display:flex;flex-direction:column;min-width:170px}
 .fg label{font-size:11px;font-weight:700;color:#666;margin-bottom:4px}
@@ -87,8 +101,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
 .fg select:focus,.fg input:focus{border-color:var(--pr)}
 .fbtn{align-self:flex-end;background:var(--pr);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
 .fbtn:hover{background:var(--pr-d)}
-.fbtn.rst{background:#e8ebf7;color:var(--pr)}
-.fbtn.rst:hover{background:#d0d5ea}
+.fbtn.rst{background:var(--pr-l);color:var(--pr)}.fbtn.rst:hover{background:#f0d8d8}
+
+/* ── dynamics section ── */
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--pr-l)}
+.sec-hdr h2{font-size:16px;font-weight:800;color:var(--pr)}
+.sec-hdr .sec-sub{font-size:12px;color:#aaa}
+.dyn-hint{background:#fff;border-radius:14px;padding:30px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);color:#aaa;margin-bottom:22px}
+.dyn-hint i{font-size:32px;display:block;margin-bottom:10px;color:var(--acc)}
+.dyn-hint p{font-size:13px}
 
 @media(max-width:1200px){.charts-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.charts-grid,.charts-grid-2{grid-template-columns:1fr}}
@@ -99,11 +120,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
-    <h2>Волинська область</h2>
-    <p>Статистика освіти</p>
+    <h2>ВНУ імені Лесі Українки</h2>
+    <p>Статистика здобувачів освіти</p>
   </div>
   <nav class="sb-nav">
-    <div class="nav-lbl">Здобувачі освіти</div>
+    <div class="nav-lbl">Навігація</div>
     <a class="nav-item active" href="index.html">
       <i class="bi bi-bar-chart-line-fill"></i> Загальна статистика
     </a>
@@ -112,24 +133,27 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
       <span id="customBadge" class="custom-badge" style="display:none">змін.</span>
     </a>
 
-    <div class="nav-lbl">Дані</div>
-    <label class="sb-upload" title="Завантажити новий Excel файл">
+    <div class="nav-lbl">Знімки даних</div>
+    <div id="snapList"></div>
+
+    <div class="nav-lbl">Дії</div>
+    <label class="sb-upload" title="Додати знімок з Excel файлу">
       <input type="file" id="xlUpload" accept=".xlsx,.xls">
-      <i class="bi bi-file-earmark-arrow-up"></i>
-      <span>Завантажити Excel</span>
+      <i class="bi bi-plus-circle"></i>
+      <span>Додати знімок</span>
     </label>
     <a class="sb-reset" href="#" onclick="doReset(event)">
-      <i class="bi bi-arrow-counterclockwise" style="font-size:16px;width:20px;text-align:center;flex-shrink:0"></i>
+      <i class="bi bi-arrow-counterclockwise"></i>
       <span>Скинути до оригіналу</span>
     </a>
   </nav>
-  <div class="sb-footer">© Волинська ОДА, 2026</div>
+  <div class="sb-footer">© ВНУ ім. Лесі Українки, 2026</div>
 </aside>
 
 <div class="main">
   <header class="topbar">
     <h1><i class="bi bi-mortarboard" style="margin-right:8px;opacity:.6"></i>Здобувачі освіти — Волинська область</h1>
-    <div class="date-badge"><i class="bi bi-calendar3"></i> Станом на 01.01.2026</div>
+    <div class="snap-badge" id="activeBadge"><i class="bi bi-calendar3"></i> <span id="activeLabel">01.01.2026</span></div>
   </header>
 
   <div class="pg">
@@ -140,9 +164,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
         <label>Освітній ступінь</label>
         <select id="fDeg" onchange="applyFilters()">
           <option value="">Всі ступені</option>
-          <option>Бакалавр</option>
-          <option>Магістр</option>
-          <option>Доктор філософії</option>
+          <option>Бакалавр</option><option>Магістр</option><option>Доктор філософії</option>
         </select>
       </div>
       <div class="fg">
@@ -152,8 +174,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
           <option>Повна загальна середня освіта</option>
           <option>Молодший спеціаліст</option>
           <option>Фаховий молодший бакалавр</option>
-          <option>Бакалавр</option>
-          <option>Магістр</option>
+          <option>Бакалавр</option><option>Магістр</option>
         </select>
       </div>
       <div class="fg" style="min-width:210px">
@@ -187,25 +208,101 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f8;color:#1a1a2
       <div class="chart-card"><div class="ct">Основа вступу</div><div class="cs">Освітньо-кваліфікаційний рівень</div><div class="cw" style="height:380px"><canvas id="cBase"></canvas></div></div>
     </div>
 
+    <!-- Dynamics section -->
+    <div id="dynSection">
+      <div class="sec-hdr">
+        <h2><i class="bi bi-graph-up-arrow" style="margin-right:8px;color:var(--acc)"></i>Динаміка змін</h2>
+        <span class="sec-sub" id="dynSubtitle"></span>
+      </div>
+
+      <!-- hint when only 1 snapshot -->
+      <div class="dyn-hint" id="dynHint">
+        <i class="bi bi-layers"></i>
+        <p>Завантажте ще один Excel-файл (знімок) через бокове меню,<br>щоб побачити динаміку змін між датами.</p>
+      </div>
+
+      <!-- charts (visible when 2+ snapshots) -->
+      <div id="dynCharts" style="display:none">
+        <div class="charts-grid-2" style="margin-bottom:22px">
+          <div class="chart-card"><div class="ct">Загальна кількість здобувачів</div><div class="cs">По знімках (хронологія)</div><div class="cw" style="height:260px"><canvas id="cDynTotal"></canvas></div></div>
+          <div class="chart-card"><div class="ct">Бюджет / Контракт</div><div class="cs">Динаміка фінансування</div><div class="cw" style="height:260px"><canvas id="cDynFunding"></canvas></div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><div class="ct">За освітнім ступенем</div><div class="cs">Бакалавр / Магістр / Доктор</div><div class="cw" style="height:240px"><canvas id="cDynDegree"></canvas></div></div>
+          <div class="chart-card"><div class="ct">За формою навчання</div><div class="cs">Денна / Заочна / Вечірня</div><div class="cw" style="height:240px"><canvas id="cDynForm"></canvas></div></div>
+          <div class="chart-card"><div class="ct">Зміна відносно першого знімка</div><div class="cs">Δ здобувачів (+ зростання / − зниження)</div><div class="cw" style="height:240px"><canvas id="cDynDelta"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
+// ── palette for multiple snapshots ─────────────────────────────────────────
+const SNAP_COLORS = ['#822020','#C8A217','#27ae60','#2980b9','#8e44ad','#16a085','#e74c3c','#d35400'];
+
 let allData = getData();
 let filtered = [...allData];
-let charts = {};
+const charts = {};
+const dynCharts = {};
 
-// ── badges ───────────────────────────────────────────────────────────────────
-if (hasCustomData()) document.getElementById('customBadge').style.display = '';
+// ── snapshot list ───────────────────────────────────────────────────────────
+function renderSnapList() {
+  const snaps = getAllSnapshots();
+  const activeId = getActiveId();
+  const el = document.getElementById('snapList');
+  if (!snaps.length) { el.innerHTML = '<div class="snap-empty">Немає знімків</div>'; return; }
+  el.innerHTML = snaps.map((s, idx) => {
+    const canDel = snaps.length > 1 || !!localStorage.getItem(SNAP_KEY);
+    return `<div class="snap-item${s.id === activeId ? ' active' : ''}" onclick="switchSnap('${s.id}')">
+      <i class="bi bi-calendar3" style="color:${idx < SNAP_COLORS.length ? SNAP_COLORS[idx] : '#aaa'};opacity:.9"></i>
+      <span class="snap-lbl">${s.label}</span>
+      ${canDel ? `<button class="snap-del" onclick="event.stopPropagation();deleteSnap('${s.id}')" title="Видалити знімок"><i class="bi bi-x"></i></button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function switchSnap(id) {
+  setActiveId(id);
+  allData = getData();
+  filtered = [...allData];
+  document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+  renderSnapList();
+  applyFilters();
+  updateDynamics();
+}
+
+function deleteSnap(id) {
+  const snaps = getAllSnapshots();
+  const snap = snaps.find(s => s.id === id);
+  if (!confirm(`Видалити знімок «${snap?.label || id}»?`)) return;
+  deleteSnapshot(id);
+  allData = getData();
+  filtered = [...allData];
+  document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+  renderSnapList();
+  applyFilters();
+  updateDynamics();
+  if (!hasCustomData()) document.getElementById('customBadge').style.display = 'none';
+}
 
 // ── Excel upload ─────────────────────────────────────────────────────────────
+function guessDateFromName(name) {
+  const m = name.match(/(\d{2})[._\-](\d{2})[._\-](\d{4})/);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : '';
+}
+function labelToIso(label) {
+  const m = label.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  return m ? `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}` : label;
+}
+
 document.getElementById('xlUpload').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const msg = hasCustomData()
-    ? 'Увага! Ви вже маєте змінені дані.\nЗавантаження нового файлу замінить ВСІ поточні дані (включно з ручними правками).\n\nПродовжити?'
-    : 'Завантаження нового Excel замінить поточні дані. Продовжити?';
-  if (!confirm(msg)) { e.target.value = ''; return; }
+  const guessed = guessDateFromName(file.name);
+  const label = prompt('Введіть дату цього знімку (наприклад: 01.03.2026):', guessed);
+  if (!label || !label.trim()) { e.target.value = ''; return; }
   const reader = new FileReader();
   reader.onload = function(ev) {
     try {
@@ -223,11 +320,17 @@ document.getElementById('xlUpload').addEventListener('change', function(e) {
           +r[7]||0, +r[8]||0, +r[9]||0, +r[10]||0, +r[11]||0, +r[12]||0
         ]);
       }
-      if (parsed.length === 0) { alert('Файл не містить даних або має інший формат.'); return; }
-      saveData(parsed);
-      alert('Завантажено ' + parsed.length + ' рядків. Сторінку буде оновлено.');
-      location.reload();
-    } catch(err) { alert('Помилка читання файлу: ' + err.message); }
+      if (!parsed.length) { alert('Файл не містить даних або має інший формат.'); e.target.value=''; return; }
+      addSnapshot(label.trim(), labelToIso(label.trim()), parsed);
+      allData = getData();
+      filtered = [...allData];
+      document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+      document.getElementById('customBadge').style.display = '';
+      renderSnapList();
+      applyFilters();
+      updateDynamics();
+      e.target.value = '';
+    } catch(err) { alert('Помилка читання файлу: ' + err.message); e.target.value=''; }
   };
   reader.readAsArrayBuffer(file);
 });
@@ -235,8 +338,9 @@ document.getElementById('xlUpload').addEventListener('change', function(e) {
 function doReset(e) {
   e.preventDefault();
   if (!hasCustomData()) { alert('Дані вже оригінальні.'); return; }
-  if (confirm('Скинути всі зміни та повернутися до оригінальних даних?')) {
-    resetToDefault(); location.reload();
+  if (confirm('Видалити всі знімки та повернутися до початкових даних?')) {
+    resetToDefault();
+    location.reload();
   }
 }
 
@@ -254,7 +358,6 @@ function applyFilters() {
   updateKPIs();
   updateCharts();
 }
-
 function resetFilters() {
   document.getElementById('fDeg').value = '';
   document.getElementById('fBase').value = '';
@@ -290,13 +393,13 @@ function updateKPIs() {
 }
 
 // ── Charts ───────────────────────────────────────────────────────────────────
-function doughnut(id, labels, data, colors) {
+function mkDoughnut(id, labels, data, colors) {
   if (charts[id]) charts[id].destroy();
   charts[id] = new Chart(document.getElementById(id), {
     type: 'doughnut',
     data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 3, borderColor: '#fff', hoverOffset: 8 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10, boxWidth: 12 } },
+      plugins: { legend: { position: 'bottom', labels: { font:{ size:11 }, padding:10, boxWidth:12 } },
         tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed.toLocaleString('uk-UA') } } } }
   });
 }
@@ -310,33 +413,30 @@ function updateCharts() {
   charts.cDegree = new Chart(document.getElementById('cDegree'), {
     type: 'bar',
     data: { labels: dKeys, datasets: [{ data: dKeys.map(k => degMap[k]),
-      backgroundColor: ['#2c3e8c','#27ae60','#e67e22'].slice(0, dKeys.length),
+      backgroundColor: ['#822020','#27ae60','#C8A217'].slice(0, dKeys.length),
       borderRadius: 6, borderSkipped: false }] },
     options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString('uk-UA') + ' осіб' } } },
-      scales: { y: { beginAtZero: true, grid: { color: '#f0f0f5' }, ticks: { font: { size: 11 } } },
-                x: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
+      plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label: ctx => ' ' + ctx.parsed.y.toLocaleString('uk-UA') + ' осіб' } } },
+      scales: { y:{ beginAtZero:true, grid:{ color:'#f0f0f5' }, ticks:{ font:{ size:11 } } },
+                x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } } }
   });
 
-  // funding
   let totB=0, totC=0;
   filtered.forEach(r => { totB += rowBudget(r); totC += rowContract(r); });
-  doughnut('cFunding', ['Бюджет','Контракт'], [totB, totC], ['#27ae60','#e67e22']);
+  mkDoughnut('cFunding', ['Бюджет','Контракт'], [totB, totC], ['#27ae60','#C8A217']);
 
-  // form
   let totF=0, totP=0, totE=0;
   filtered.forEach(r => { totF += rowFull(r); totP += rowPart(r); totE += rowEven(r); });
-  const fLabels = ['Денна','Заочна']; const fData = [totF, totP]; const fColors = ['#2c3e8c','#4a90d9'];
-  if (totE > 0) { fLabels.push('Вечірня'); fData.push(totE); fColors.push('#9b59b6'); }
-  doughnut('cForm', fLabels, fData, fColors);
+  const fLbls = ['Денна','Заочна'], fDat = [totF, totP], fCol = ['#822020','#b85858'];
+  if (totE > 0) { fLbls.push('Вечірня'); fDat.push(totE); fCol.push('#C8A217'); }
+  mkDoughnut('cForm', fLbls, fDat, fCol);
 
-  // top specs
   const specMap = {};
   filtered.forEach(r => {
-    if (!specMap[r[3]]) specMap[r[3]] = { b: 0, c: 0 };
+    if (!specMap[r[3]]) specMap[r[3]] = { b:0, c:0 };
     specMap[r[3]].b += rowBudget(r); specMap[r[3]].c += rowContract(r);
   });
-  const top = Object.entries(specMap).map(([n,v]) => ({ n, t: v.b+v.c, b: v.b, c: v.c }))
+  const top = Object.entries(specMap).map(([n,v]) => ({ n, t:v.b+v.c, b:v.b, c:v.c }))
     .sort((a,b) => b.t - a.t).slice(0, 15);
   const sh = s => s.length > 36 ? s.slice(0,34)+'…' : s;
   if (charts.cTopSpec) charts.cTopSpec.destroy();
@@ -344,26 +444,125 @@ function updateCharts() {
     type: 'bar',
     data: { labels: top.map(x => sh(x.n)),
       datasets: [
-        { label: 'Бюджет',   data: top.map(x => x.b), backgroundColor: '#27ae60', borderRadius: 4 },
-        { label: 'Контракт', data: top.map(x => x.c), backgroundColor: '#e67e22', borderRadius: 4 }
+        { label:'Бюджет',   data: top.map(x => x.b), backgroundColor:'#27ae60', borderRadius:4 },
+        { label:'Контракт', data: top.map(x => x.c), backgroundColor:'#C8A217', borderRadius:4 }
       ] },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { font: { size: 11 } } },
-        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString('uk-UA') } } },
-      scales: { x: { stacked: true, grid: { color: '#f0f0f5' }, ticks: { font: { size: 11 } } },
-                y: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } } } }
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'top', labels:{ font:{ size:11 } } },
+        tooltip:{ callbacks:{ label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString('uk-UA') } } },
+      scales: { x:{ stacked:true, grid:{ color:'#f0f0f5' }, ticks:{ font:{ size:11 } } },
+                y:{ stacked:true, grid:{ display:false }, ticks:{ font:{ size:11 } } } } }
   });
 
-  // base
   const baseMap = {};
   filtered.forEach(r => { baseMap[r[1]] = (baseMap[r[1]]||0) + rowTotal(r); });
   const bKeys = Object.keys(baseMap);
-  doughnut('cBase', bKeys, bKeys.map(k => baseMap[k]),
-    ['#2c3e8c','#4a90d9','#27ae60','#e67e22','#9b59b6'].slice(0, bKeys.length));
+  mkDoughnut('cBase', bKeys, bKeys.map(k => baseMap[k]),
+    ['#822020','#b85858','#27ae60','#C8A217','#8e44ad'].slice(0, bKeys.length));
+}
+
+// ── Dynamics ─────────────────────────────────────────────────────────────────
+function mkDynBar(id, labels, datasets, opts = {}) {
+  if (dynCharts[id]) dynCharts[id].destroy();
+  dynCharts[id] = new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets: datasets.map((d,i) => ({
+      ...d, borderRadius: 5, borderSkipped: false,
+      backgroundColor: d.backgroundColor || SNAP_COLORS[i % SNAP_COLORS.length]
+    }))},
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: datasets.length > 1, position:'top', labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('uk-UA') } } },
+      scales: { y: { beginAtZero: false, grid:{ color:'#f4f4f8' }, ticks:{ font:{size:11} } },
+                x: { grid:{ display:false }, ticks:{ font:{size:11} } } },
+      ...opts }
+  });
+}
+
+function updateDynamics() {
+  const snaps = getAllSnapshots();
+  const hasDyn = snaps.length >= 2;
+  document.getElementById('dynHint').style.display   = hasDyn ? 'none' : '';
+  document.getElementById('dynCharts').style.display = hasDyn ? '' : 'none';
+  const sub = document.getElementById('dynSubtitle');
+  sub.textContent = hasDyn ? `${snaps.length} знімків · ${snaps[0].label} — ${snaps[snaps.length-1].label}` : '';
+  if (!hasDyn) return;
+
+  const labels = snaps.map(s => s.label);
+
+  // 1. Total
+  mkDynBar('cDynTotal', labels, [{
+    label: 'Всього здобувачів',
+    data: snaps.map(s => s.data.reduce((a,r) => a + rowTotal(r), 0)),
+    backgroundColor: snaps.map((_,i) => SNAP_COLORS[i % SNAP_COLORS.length])
+  }]);
+
+  // 2. Budget vs Contract
+  mkDynBar('cDynFunding', labels, [
+    { label:'Бюджет',   data: snaps.map(s => s.data.reduce((a,r) => a + rowBudget(r),   0)), backgroundColor:'#27ae60' },
+    { label:'Контракт', data: snaps.map(s => s.data.reduce((a,r) => a + rowContract(r), 0)), backgroundColor:'#C8A217' }
+  ], { scales:{ y:{ beginAtZero:true, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} }, x:{ grid:{display:false}, ticks:{font:{size:11}} } } });
+
+  // 3. By degree (stacked)
+  const degrees = ['Бакалавр','Магістр','Доктор філософії'];
+  const degColors = ['#822020','#C8A217','#27ae60'];
+  const cDynDeg = document.getElementById('cDynDegree');
+  if (dynCharts.cDynDegree) dynCharts.cDynDegree.destroy();
+  dynCharts.cDynDegree = new Chart(cDynDeg, {
+    type: 'bar',
+    data: { labels, datasets: degrees.map((deg, i) => ({
+      label: deg,
+      data: snaps.map(s => s.data.filter(r => r[0]===deg).reduce((a,r) => a+rowTotal(r), 0)),
+      backgroundColor: degColors[i], borderRadius: 4
+    }))},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'top', labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip:{ callbacks:{ label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('uk-UA') } } },
+      scales: { x:{ stacked:true, grid:{display:false}, ticks:{font:{size:11}} },
+                y:{ stacked:true, beginAtZero:true, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} } } }
+  });
+
+  // 4. By form (stacked)
+  const cDynFrm = document.getElementById('cDynForm');
+  if (dynCharts.cDynForm) dynCharts.cDynForm.destroy();
+  dynCharts.cDynForm = new Chart(cDynFrm, {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label:'Денна',   data: snaps.map(s => s.data.reduce((a,r) => a+rowFull(r),0)), backgroundColor:'#822020', borderRadius:4 },
+      { label:'Заочна',  data: snaps.map(s => s.data.reduce((a,r) => a+rowPart(r),0)), backgroundColor:'#b85858', borderRadius:4 },
+      { label:'Вечірня', data: snaps.map(s => s.data.reduce((a,r) => a+rowEven(r),0)), backgroundColor:'#C8A217', borderRadius:4 }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'top', labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip:{ callbacks:{ label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('uk-UA') } } },
+      scales: { x:{ stacked:true, grid:{display:false}, ticks:{font:{size:11}} },
+                y:{ stacked:true, beginAtZero:true, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} } } }
+  });
+
+  // 5. Delta vs first snapshot
+  const base0 = snaps[0].data.reduce((a,r) => a+rowTotal(r), 0);
+  const deltas = snaps.map(s => s.data.reduce((a,r) => a+rowTotal(r), 0) - base0);
+  const cDynDlt = document.getElementById('cDynDelta');
+  if (dynCharts.cDynDelta) dynCharts.cDynDelta.destroy();
+  dynCharts.cDynDelta = new Chart(cDynDlt, {
+    type: 'bar',
+    data: { labels, datasets: [{ label:'Δ відносно першого знімка', data: deltas,
+      backgroundColor: deltas.map(d => d >= 0 ? '#27ae60' : '#c0392b'),
+      borderRadius: 5, borderSkipped: false }] },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false },
+        tooltip:{ callbacks:{ label: ctx => (ctx.parsed.y >= 0 ? '+' : '') + ctx.parsed.y.toLocaleString('uk-UA') + ' осіб' } } },
+      scales: { y:{ beginAtZero:false, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} },
+                x:{ grid:{display:false}, ticks:{font:{size:11}} } } }
+  });
 }
 
 // ── init ─────────────────────────────────────────────────────────────────────
+if (hasCustomData()) document.getElementById('customBadge').style.display = '';
+document.getElementById('activeLabel').textContent = getActiveSnapshot().label;
+renderSnapList();
 applyFilters();
+updateDynamics();
 </script>
 </body>
 </html>

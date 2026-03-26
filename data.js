@@ -361,26 +361,81 @@ const DEFAULT_DATA = [
 ["Доктор філософії","Магістр","I7","Терапія та реабілітація","",1,0,0,0,0,0]
 ];
 
-// ── Сховище ──────────────────────────────────────────────────────────────────
-const STORAGE_KEY = 'volyn_edu_2026';
+// ── Зберігання — множинні знімки ─────────────────────────────────────────────
+// Формат: [{id, label, date, data}]  (date = 'YYYY-MM-DD')
+const SNAP_KEY = 'volyn_snapshots';
+const ACTV_KEY = 'volyn_active';
 
-function getData() {
+function _defSnap() {
+  return { id:'__def__', label:'01.01.2026', date:'2026-01-01', data: DEFAULT_DATA.map(r=>[...r]) };
+}
+
+function getAllSnapshots() {
   try {
-    const s = localStorage.getItem(STORAGE_KEY);
-    return s ? JSON.parse(s) : DEFAULT_DATA.map(r => [...r]);
-  } catch(e) { return DEFAULT_DATA.map(r => [...r]); }
+    // migrate legacy single-snapshot format
+    const old = localStorage.getItem('volyn_edu_2026');
+    if (old) {
+      const snaps = [{ id:'snap_legacy', label:'01.01.2026', date:'2026-01-01', data: JSON.parse(old) }];
+      localStorage.setItem(SNAP_KEY, JSON.stringify(snaps));
+      localStorage.removeItem('volyn_edu_2026');
+      return snaps;
+    }
+    const raw = localStorage.getItem(SNAP_KEY);
+    if (raw) { const a = JSON.parse(raw); if (Array.isArray(a) && a.length) return a; }
+  } catch(e) {}
+  return [_defSnap()];
 }
 
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function saveSnapshots(arr) { localStorage.setItem(SNAP_KEY, JSON.stringify(arr)); }
+
+function getActiveId() {
+  const id = localStorage.getItem(ACTV_KEY);
+  const snaps = getAllSnapshots();
+  if (id && snaps.some(s => s.id === id)) return id;
+  return snaps[snaps.length - 1].id;
 }
 
-function hasCustomData() {
-  return localStorage.getItem(STORAGE_KEY) !== null;
+function setActiveId(id) { localStorage.setItem(ACTV_KEY, id); }
+
+function getActiveSnapshot() {
+  const id = getActiveId(), snaps = getAllSnapshots();
+  return snaps.find(s => s.id === id) || snaps[snaps.length - 1];
 }
 
+function addSnapshot(label, date, data) {
+  // if no saved snapshots yet — include default as first
+  let snaps = localStorage.getItem(SNAP_KEY)
+    ? getAllSnapshots()
+    : [{ id:'snap_'+(Date.now()-1), label:'01.01.2026', date:'2026-01-01', data: DEFAULT_DATA.map(r=>[...r]) }];
+  const id = 'snap_' + Date.now();
+  snaps.push({ id, label, date, data });
+  snaps.sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  saveSnapshots(snaps);
+  setActiveId(id);
+  return id;
+}
+
+function deleteSnapshot(id) {
+  let snaps = getAllSnapshots().filter(s => s.id !== id);
+  if (!snaps.length) { localStorage.removeItem(SNAP_KEY); localStorage.removeItem(ACTV_KEY); return; }
+  saveSnapshots(snaps);
+  if (localStorage.getItem(ACTV_KEY) === id) setActiveId(snaps[snaps.length - 1].id);
+}
+
+function updateActiveData(data) {
+  const snaps = getAllSnapshots();
+  const s = snaps.find(s => s.id === getActiveId());
+  if (s) { s.data = data; saveSnapshots(snaps); }
+}
+
+// ── Legacy API (зворотна сумісність для table.html) ───────────────────────────
+function getData()       { return getActiveSnapshot().data.map(r=>[...r]); }
+function saveData(data)  { updateActiveData(data); }
+function hasCustomData() { return !!localStorage.getItem(SNAP_KEY); }
 function resetToDefault() {
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(SNAP_KEY);
+  localStorage.removeItem(ACTV_KEY);
+  localStorage.removeItem('volyn_edu_2026');
 }
 
 // ── Допоміжні функції підрахунку ─────────────────────────────────────────────
