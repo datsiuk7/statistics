@@ -981,6 +981,7 @@ function updateKPIs() {
   const pctB = total ? Math.round(budget/total*100) : 0;
   const pctC = total ? Math.round(contract/total*100) : 0;
   const pctF = total ? Math.round(full/total*100) : 0;
+  const pctE = total ? Math.round(even/total*100) : 0;
   const pctP = total ? Math.round(part/total*100) : 0;
   document.getElementById('kpiTotal').textContent = total.toLocaleString('uk-UA');
   document.getElementById('kpiBudget').textContent = budget.toLocaleString('uk-UA');
