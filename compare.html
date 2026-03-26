@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Порівняння знімків — ВНУ імені Лесі Українки</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<style>
+:root{--pr:#822020;--pr-d:#5c1010;--pr-l:#f9eaea;--acc:#C8A217;--acc-l:#fdf7e2;--sw:272px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f4f7;color:#1a1a2e;display:flex;min-height:100vh}
+
+/* ── sidebar ── */
+.sidebar{width:var(--sw);height:100vh;background:linear-gradient(175deg,var(--pr-d) 0%,var(--pr) 100%);position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.28);overflow:hidden}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb-logo .ico{width:44px;height:44px;background:rgba(255,255,255,.13);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--acc);margin-bottom:10px}
+.sb-logo h2{color:#fff;font-size:13.5px;font-weight:700;line-height:1.35}
+.sb-logo p{color:rgba(255,255,255,.5);font-size:11px;margin-top:3px}
+.sb-nav{padding:10px 0;flex:1;overflow-y:auto;overflow-x:hidden}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-track{background:transparent}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
+.nav-lbl{color:rgba(255,255,255,.38);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 20px 5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;font-weight:600;border-left-color:var(--acc)}
+.nav-item i{font-size:16px;width:20px;text-align:center}
+.snap-item{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 20px;cursor:pointer;border-left:3px solid transparent;transition:all .2s;color:rgba(255,255,255,.65);font-size:13px;user-select:none}
+.snap-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.snap-item.active{background:rgba(255,255,255,.13);color:#fff;font-weight:600;border-left-color:var(--acc)}
+.snap-item i{font-size:13px;flex-shrink:0;width:18px;text-align:center}
+.snap-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-upload{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none;width:100%}
+.sb-upload:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(200,162,23,.6)}
+.sb-upload i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-upload span{font-size:13.5px;font-weight:500}
+.sb-upload input{display:none}
+.sb-reset{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,130,130,.7);font-size:13.5px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
+.sb-reset:hover{background:rgba(255,255,255,.08);color:rgba(255,160,160,1);border-left-color:rgba(255,100,100,.5)}
+.sb-reset i{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.custom-badge{display:inline-block;background:var(--acc);color:#3a2800;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px;font-weight:700}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-size:11px;flex-shrink:0}
+
+/* ── main ── */
+.main{margin-left:var(--sw);flex:1;min-height:100vh}
+.topbar{background:#fff;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.07);position:sticky;top:0;z-index:50;gap:16px}
+.topbar h1{font-size:16px;font-weight:700;color:var(--pr);white-space:nowrap;flex-shrink:0}
+.compare-sel{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.compare-sel select{border:1.5px solid #dde1ef;border-radius:8px;padding:6px 10px;font-size:13px;color:#333;background:#f8f9fc;outline:none;cursor:pointer;transition:border-color .2s;max-width:170px}
+.compare-sel select:focus{border-color:var(--pr)}
+.compare-sel .arr{font-size:16px;color:#aaa;flex-shrink:0}
+.compare-sel .swap-btn{background:var(--pr-l);border:none;color:var(--pr);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0}
+.compare-sel .swap-btn:hover{background:var(--pr);color:#fff}
+.pg{padding:24px 28px 40px}
+
+/* ── hint when only 1 snap ── */
+.no-data-hint{background:#fff;border-radius:14px;padding:48px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.no-data-hint i{font-size:40px;color:var(--acc);display:block;margin-bottom:14px}
+.no-data-hint h3{font-size:17px;font-weight:700;color:var(--pr);margin-bottom:8px}
+.no-data-hint p{font-size:13px;color:#aaa;line-height:1.6}
+
+/* ── delta KPI cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:14px;margin-bottom:22px}
+.kpi{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.kpi.add::before{background:linear-gradient(90deg,#27ae60,#2ecc71)}
+.kpi.rem::before{background:linear-gradient(90deg,#c0392b,#e74c3c)}
+.kpi.chg::before{background:linear-gradient(90deg,#C8A217,#e6bc24)}
+.kpi.dlt-pos::before{background:linear-gradient(90deg,#27ae60,#2ecc71)}
+.kpi.dlt-neg::before{background:linear-gradient(90deg,#c0392b,#e74c3c)}
+.kpi.dlt-neu::before{background:linear-gradient(90deg,#aaa,#ccc)}
+.kpi-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px}
+.kpi.add .kpi-ico{background:#eafaf1;color:#27ae60}
+.kpi.rem .kpi-ico{background:#fdedec;color:#c0392b}
+.kpi.chg .kpi-ico{background:var(--acc-l);color:#7a5c00}
+.kpi.dlt-pos .kpi-ico,.kpi.dlt-neg .kpi-ico,.kpi.dlt-neu .kpi-ico{background:#f4f4f8;color:#555}
+.kpi-val{font-size:24px;font-weight:800;line-height:1}
+.kpi.dlt-pos .kpi-val{color:#27ae60}
+.kpi.dlt-neg .kpi-val{color:#c0392b}
+.kpi.dlt-neu .kpi-val{color:#888}
+.kpi.add .kpi-val{color:#27ae60}
+.kpi.rem .kpi-val{color:#c0392b}
+.kpi.chg .kpi-val{color:#7a5c00}
+.kpi-lbl{font-size:12px;color:#888;margin-top:4px;font-weight:500}
+
+/* ── charts ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ct{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:3px}
+.cs{font-size:11px;color:#aaa;margin-bottom:14px}
+.cw{position:relative}
+
+/* ── diff table ── */
+.tcard{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden}
+.diff-toolbar{padding:12px 16px;border-bottom:1px solid #f0f0f5;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.diff-toolbar span{font-size:12px;color:#888;margin-right:4px}
+.ftab{border:1.5px solid #e0e0ea;background:#fff;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;color:#777;transition:all .2s}
+.ftab:hover{border-color:var(--pr);color:var(--pr)}
+.ftab.active{background:var(--pr);color:#fff;border-color:var(--pr)}
+.ftab.t-add{}.ftab.t-add.active{background:#27ae60;border-color:#27ae60}
+.ftab.t-rem{}.ftab.t-rem.active{background:#c0392b;border-color:#c0392b}
+.ftab.t-chg{}.ftab.t-chg.active{background:#C8A217;border-color:#C8A217;color:#3a2800}
+.ftab.t-unch{}.ftab.t-unch.active{background:#888;border-color:#888}
+.diff-count{margin-left:auto;font-size:12px;color:#aaa}
+.tscroll{overflow-x:auto;max-height:calc(100vh - 320px);overflow-y:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:#f7f8fc;padding:8px 10px;font-size:11px;font-weight:700;color:#555;text-align:left;border-bottom:2px solid #eaeaf0;position:sticky;top:0;z-index:10;white-space:nowrap}
+thead th.num{text-align:center}
+td{padding:7px 10px;font-size:12px;color:#333;border-bottom:1px solid #f5f5fa;vertical-align:middle}
+tr.row-add td{background:#eafaf1}
+tr.row-add:hover td{background:#d5f5e3}
+tr.row-rem td{background:#fdf3f3;opacity:.85}
+tr.row-rem:hover td{background:#fde8e8}
+tr.row-chg td{background:#fffef0}
+tr.row-chg:hover td{background:#fdf9d9}
+tr.row-unch td{background:#fafafa;color:#aaa}
+td.num{text-align:center;font-weight:600}
+td.zero{color:#ddd;font-weight:400}
+.status-bdg{display:inline-block;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap}
+.bdg-add{background:#eafaf1;color:#1e8449}
+.bdg-rem{background:#fdedec;color:#922b21}
+.bdg-chg{background:var(--acc-l);color:#7a5c00}
+.bdg-unch{background:#f4f4f8;color:#999}
+.bdg-deg-b{background:#f9eaea;color:#822020}
+.bdg-deg-m{background:#eafaf1;color:#1e8449}
+.bdg-deg-p{background:var(--acc-l);color:#7a5c00}
+.delta{font-size:10px;font-weight:700;margin-left:3px}
+.delta.pos{color:#27ae60}
+.delta.neg{color:#c0392b}
+.changed-cell{position:relative}
+.empty-diff{padding:36px;text-align:center;color:#aaa;font-size:13px}
+.empty-diff i{font-size:28px;display:block;margin-bottom:8px;color:#C8A217}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="ico"><i class="bi bi-mortarboard-fill"></i></div>
+    <h2>ВНУ імені Лесі Українки</h2>
+    <p>Статистика здобувачів освіти</p>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-lbl">Навігація</div>
+    <a class="nav-item" href="index.html"><i class="bi bi-bar-chart-line-fill"></i> Загальна статистика</a>
+    <a class="nav-item" href="table.html">
+      <i class="bi bi-table"></i> Детальна таблиця
+      <span id="customBadge" class="custom-badge" style="display:none">змін.</span>
+    </a>
+    <a class="nav-item active" href="compare.html"><i class="bi bi-arrow-left-right"></i> Порівняння знімків</a>
+
+    <div class="nav-lbl">Знімки даних</div>
+    <div id="snapList"></div>
+
+    <div class="nav-lbl">Дії</div>
+    <label class="sb-upload" title="Додати знімок з Excel файлу">
+      <input type="file" id="xlUpload" accept=".xlsx,.xls">
+      <i class="bi bi-plus-circle"></i>
+      <span>Додати знімок</span>
+    </label>
+    <a class="sb-reset" href="#" onclick="doReset(event)">
+      <i class="bi bi-arrow-counterclockwise"></i>
+      <span>Скинути до оригіналу</span>
+    </a>
+  </nav>
+  <div class="sb-footer">© ВНУ ім. Лесі Українки, 2026</div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <h1><i class="bi bi-arrow-left-right" style="margin-right:8px;opacity:.6"></i>Порівняння знімків</h1>
+    <div class="compare-sel" id="compareSel">
+      <select id="selA" onchange="runCompare()"></select>
+      <span class="arr"><i class="bi bi-arrow-right"></i></span>
+      <select id="selB" onchange="runCompare()"></select>
+      <button class="swap-btn" onclick="swapSnaps()" title="Поміняти місцями"><i class="bi bi-arrow-left-right"></i></button>
+    </div>
+  </header>
+
+  <div class="pg" id="mainPg">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+const SNAP_COLORS = ['#822020','#C8A217','#27ae60','#2980b9','#8e44ad','#16a085','#e74c3c','#d35400'];
+let diff = [];
+let currentFilter = 'changed';
+const cmpCharts = {};
+
+// ── sidebar snapshot list ───────────────────────────────────────────────────
+function renderSnapList() {
+  const snaps = getAllSnapshots();
+  const activeId = getActiveId();
+  const el = document.getElementById('snapList');
+  el.innerHTML = snaps.map((s, i) =>
+    `<div class="snap-item${s.id === activeId ? ' active' : ''}">
+      <i class="bi bi-calendar3" style="color:${SNAP_COLORS[i % SNAP_COLORS.length]};opacity:.9"></i>
+      <span class="snap-lbl">${s.label}</span>
+    </div>`
+  ).join('');
+}
+
+// ── populate snapshot selectors ─────────────────────────────────────────────
+function populateSelectors() {
+  const snaps = getAllSnapshots();
+  [document.getElementById('selA'), document.getElementById('selB')].forEach((sel, si) => {
+    sel.innerHTML = snaps.map(s => `<option value="${s.id}">${s.label}</option>`).join('');
+    // default: A = first, B = last
+    if (si === 0) sel.value = snaps[0].id;
+    if (si === 1) sel.value = snaps[snaps.length - 1].id;
+  });
+}
+
+function swapSnaps() {
+  const selA = document.getElementById('selA');
+  const selB = document.getElementById('selB');
+  [selA.value, selB.value] = [selB.value, selA.value];
+  runCompare();
+}
+
+// ── diff algorithm ──────────────────────────────────────────────────────────
+function keyOf(r) { return r.slice(0, 5).join('§'); }
+
+function computeDiff(sA, sB) {
+  const mapA = new Map(sA.data.map(r => [keyOf(r), r]));
+  const mapB = new Map(sB.data.map(r => [keyOf(r), r]));
+  const result = [];
+  mapA.forEach((rA, key) => {
+    if (!mapB.has(key)) {
+      result.push({ type:'removed', r:rA, rA, rB:null });
+    } else {
+      const rB = mapB.get(key);
+      const changed = [5,6,7,8,9,10].some(i => rA[i] !== rB[i]);
+      result.push({ type: changed ? 'changed' : 'unchanged', r:rB, rA, rB });
+    }
+  });
+  mapB.forEach((rB, key) => {
+    if (!mapA.has(key)) result.push({ type:'added', r:rB, rA:null, rB });
+  });
+  return result;
+}
+
+// ── run comparison ──────────────────────────────────────────────────────────
+function runCompare() {
+  const snaps = getAllSnapshots();
+  const idA = document.getElementById('selA').value;
+  const idB = document.getElementById('selB').value;
+  const sA = snaps.find(s => s.id === idA);
+  const sB = snaps.find(s => s.id === idB);
+  if (!sA || !sB) return;
+
+  const pg = document.getElementById('mainPg');
+
+  if (snaps.length < 2) {
+    pg.innerHTML = `<div class="no-data-hint">
+      <i class="bi bi-layers"></i>
+      <h3>Потрібно щонайменше два знімки</h3>
+      <p>Завантажте ще один Excel-файл через бокове меню,<br>щоб можна було порівнювати дані між датами.</p>
+    </div>`;
+    return;
+  }
+
+  if (idA === idB) {
+    pg.innerHTML = `<div class="no-data-hint">
+      <i class="bi bi-exclamation-circle" style="color:#aaa"></i>
+      <h3>Вибрано однаковий знімок</h3>
+      <p>Оберіть два різних знімки для порівняння.</p>
+    </div>`;
+    return;
+  }
+
+  diff = computeDiff(sA, sB);
+
+  const totA = sA.data.reduce((s,r) => s + rowTotal(r), 0);
+  const totB = sB.data.reduce((s,r) => s + rowTotal(r), 0);
+  const budA = sA.data.reduce((s,r) => s + rowBudget(r), 0);
+  const budB = sB.data.reduce((s,r) => s + rowBudget(r), 0);
+  const conA = sA.data.reduce((s,r) => s + rowContract(r), 0);
+  const conB = sB.data.reduce((s,r) => s + rowContract(r), 0);
+  const nAdd  = diff.filter(d => d.type === 'added').length;
+  const nRem  = diff.filter(d => d.type === 'removed').length;
+  const nChg  = diff.filter(d => d.type === 'changed').length;
+  const nUnch = diff.filter(d => d.type === 'unchanged').length;
+  const dTot = totB - totA, dBud = budB - budA, dCon = conB - conA;
+  const fmt = v => v.toLocaleString('uk-UA');
+  const fmtD = v => (v > 0 ? '+' : '') + fmt(v);
+  const dClass = v => v > 0 ? 'dlt-pos' : v < 0 ? 'dlt-neg' : 'dlt-neu';
+
+  pg.innerHTML = `
+    <!-- KPI delta -->
+    <div class="kpi-grid">
+      <div class="kpi ${dClass(dTot)}">
+        <div class="kpi-ico"><i class="bi bi-people-fill"></i></div>
+        <div class="kpi-val">${fmtD(dTot)}</div>
+        <div class="kpi-lbl">Δ Всього здобувачів</div>
+      </div>
+      <div class="kpi ${dClass(dBud)}">
+        <div class="kpi-ico"><i class="bi bi-award-fill"></i></div>
+        <div class="kpi-val">${fmtD(dBud)}</div>
+        <div class="kpi-lbl">Δ Бюджетних місць</div>
+      </div>
+      <div class="kpi ${dClass(dCon)}">
+        <div class="kpi-ico"><i class="bi bi-cash-stack"></i></div>
+        <div class="kpi-val">${fmtD(dCon)}</div>
+        <div class="kpi-lbl">Δ Контрактних місць</div>
+      </div>
+      <div class="kpi add">
+        <div class="kpi-ico"><i class="bi bi-plus-circle-fill"></i></div>
+        <div class="kpi-val">+${nAdd}</div>
+        <div class="kpi-lbl">Нових рядків</div>
+      </div>
+      <div class="kpi rem">
+        <div class="kpi-ico"><i class="bi bi-dash-circle-fill"></i></div>
+        <div class="kpi-val">-${nRem}</div>
+        <div class="kpi-lbl">Видалених рядків</div>
+      </div>
+      <div class="kpi chg">
+        <div class="kpi-ico"><i class="bi bi-pencil-fill"></i></div>
+        <div class="kpi-val">${nChg}</div>
+        <div class="kpi-lbl">Змінених рядків</div>
+      </div>
+    </div>
+
+    <!-- comparison charts -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="ct">За освітнім ступенем</div>
+        <div class="cs">${sA.label} vs ${sB.label}</div>
+        <div class="cw" style="height:240px"><canvas id="cCmpDeg"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="ct">Бюджет / Контракт / Форма</div>
+        <div class="cs">${sA.label} vs ${sB.label}</div>
+        <div class="cw" style="height:240px"><canvas id="cCmpFin"></canvas></div>
+      </div>
+    </div>
+
+    <!-- diff table -->
+    <div class="tcard">
+      <div class="diff-toolbar">
+        <span>Показати:</span>
+        <button class="ftab" onclick="setFilter('all')" id="ftAll">Всі (${diff.length})</button>
+        <button class="ftab t-add" onclick="setFilter('added')" id="ftAdd">Додані (${nAdd})</button>
+        <button class="ftab t-rem" onclick="setFilter('removed')" id="ftRem">Видалені (${nRem})</button>
+        <button class="ftab t-chg" onclick="setFilter('changed')" id="ftChg">Змінені (${nChg})</button>
+        <button class="ftab t-unch" onclick="setFilter('unchanged')" id="ftUnch">Незмінені (${nUnch})</button>
+        <span class="diff-count" id="diffCount"></span>
+      </div>
+      <div class="tscroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Статус</th>
+              <th>Ступінь</th>
+              <th>Основа вступу</th>
+              <th>Код</th>
+              <th>Назва спеціальності</th>
+              <th>Спеціалізація</th>
+              <th class="num">Ден.<br>Бюдж</th>
+              <th class="num">Ден.<br>Контр</th>
+              <th class="num">Зао.<br>Бюдж</th>
+              <th class="num">Зао.<br>Контр</th>
+              <th class="num">Веч.<br>Бюдж</th>
+              <th class="num">Веч.<br>Контр</th>
+              <th class="num">Всього</th>
+            </tr>
+          </thead>
+          <tbody id="diffBody"></tbody>
+        </table>
+      </div>
+    </div>`;
+
+  buildCharts(sA, sB);
+  setFilter(currentFilter === 'changed' && nChg === 0 ? 'all' : currentFilter);
+}
+
+// ── comparison charts ───────────────────────────────────────────────────────
+function buildCharts(sA, sB) {
+  const degrees = ['Бакалавр', 'Магістр', 'Доктор філософії'];
+  const degTot = (snap, deg) => snap.data.filter(r => r[0] === deg).reduce((s,r) => s + rowTotal(r), 0);
+
+  if (cmpCharts.deg) cmpCharts.deg.destroy();
+  cmpCharts.deg = new Chart(document.getElementById('cCmpDeg'), {
+    type: 'bar',
+    data: { labels: degrees,
+      datasets: [
+        { label: sA.label, data: degrees.map(d => degTot(sA, d)), backgroundColor: '#822020', borderRadius: 5 },
+        { label: sB.label, data: degrees.map(d => degTot(sB, d)), backgroundColor: '#C8A217', borderRadius: 5 }
+      ] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position:'top', labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('uk-UA') } } },
+      scales: { y: { beginAtZero: true, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} },
+                x: { grid:{display:false}, ticks:{font:{size:11}} } } }
+  });
+
+  const finLabels = ['Бюджет', 'Контракт', 'Денна', 'Заочна'];
+  const finA = [
+    sA.data.reduce((s,r) => s+rowBudget(r), 0),
+    sA.data.reduce((s,r) => s+rowContract(r), 0),
+    sA.data.reduce((s,r) => s+rowFull(r), 0),
+    sA.data.reduce((s,r) => s+rowPart(r), 0)
+  ];
+  const finB = [
+    sB.data.reduce((s,r) => s+rowBudget(r), 0),
+    sB.data.reduce((s,r) => s+rowContract(r), 0),
+    sB.data.reduce((s,r) => s+rowFull(r), 0),
+    sB.data.reduce((s,r) => s+rowPart(r), 0)
+  ];
+  if (cmpCharts.fin) cmpCharts.fin.destroy();
+  cmpCharts.fin = new Chart(document.getElementById('cCmpFin'), {
+    type: 'bar',
+    data: { labels: finLabels,
+      datasets: [
+        { label: sA.label, data: finA, backgroundColor: '#822020', borderRadius: 5 },
+        { label: sB.label, data: finB, backgroundColor: '#C8A217', borderRadius: 5 }
+      ] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position:'top', labels:{ font:{size:11}, padding:10, boxWidth:12 } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('uk-UA') } } },
+      scales: { y: { beginAtZero: true, grid:{color:'#f4f4f8'}, ticks:{font:{size:11}} },
+                x: { grid:{display:false}, ticks:{font:{size:11}} } } }
+  });
+}
+
+// ── filter & render diff table ──────────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  ['all','added','removed','changed','unchanged'].forEach(k => {
+    const el = document.getElementById('ft' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (el) el.classList.toggle('active', k === f);
+  });
+  renderDiffTable();
+}
+
+const degBdg = { 'Бакалавр':'bdg-deg-b', 'Магістр':'bdg-deg-m', 'Доктор філософії':'bdg-deg-p' };
+const statusBdg = { added:'bdg-add', removed:'bdg-rem', changed:'bdg-chg', unchanged:'bdg-unch' };
+const statusLbl = { added:'Додано', removed:'Видалено', changed:'Змінено', unchanged:'Без змін' };
+
+function numCell(d, idx) {
+  const r = d.rB || d.rA;
+  const v = r[idx];
+  if (d.type === 'changed' && d.rA && d.rB) {
+    const delta = d.rB[idx] - d.rA[idx];
+    if (delta !== 0) {
+      return `<td class="num changed-cell">${d.rB[idx] || '—'}<span class="delta ${delta>0?'pos':'neg'}">${delta>0?'+':''}${delta}</span></td>`;
+    }
+  }
+  return `<td class="num ${v===0?'zero':''}">${v || '—'}</td>`;
+}
+
+function renderDiffTable() {
+  const tbody = document.getElementById('diffBody');
+  if (!tbody) return;
+  const rows = currentFilter === 'all' ? diff : diff.filter(d => d.type === currentFilter);
+  document.getElementById('diffCount').textContent = `${rows.length} рядків`;
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="13" class="empty-diff"><i class="bi bi-check-circle" style="color:#27ae60"></i>Немає рядків для цього фільтру</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(d => {
+    const r = d.rB || d.rA;
+    const tot = d.type === 'changed'
+      ? `${rowTotal(d.rB)}<span class="delta ${rowTotal(d.rB)-rowTotal(d.rA)>0?'pos':'neg'}">${rowTotal(d.rB)-rowTotal(d.rA)>0?'+':''}${rowTotal(d.rB)-rowTotal(d.rA)}</span>`
+      : (rowTotal(r) || '—');
+    return `<tr class="row-${d.type}">
+      <td><span class="status-bdg ${statusBdg[d.type]}">${statusLbl[d.type]}</span></td>
+      <td><span class="status-bdg ${degBdg[r[0]]||'bdg-unch'}">${r[0]}</span></td>
+      <td style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r[1]}">${r[1]}</td>
+      <td style="font-weight:700;color:var(--pr)">${r[2]}</td>
+      <td style="max-width:190px">${r[3]}</td>
+      <td style="max-width:140px;font-size:11px;color:#999">${r[4]||'—'}</td>
+      ${numCell(d,5)}${numCell(d,6)}${numCell(d,7)}${numCell(d,8)}${numCell(d,9)}${numCell(d,10)}
+      <td class="num" style="font-weight:800">${tot}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Excel upload (same as other pages) ─────────────────────────────────────
+function guessDateFromName(name) {
+  const m = name.match(/(\d{2})[._\-](\d{2})[._\-](\d{4})/);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : '';
+}
+function labelToIso(label) {
+  const m = label.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  return m ? `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}` : label;
+}
+document.getElementById('xlUpload').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const label = prompt('Введіть дату знімку (наприклад: 01.03.2026):', guessDateFromName(file.name));
+  if (!label?.trim()) { e.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type:'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header:1, defval:'' });
+      const parsed = [];
+      for (let i=1; i<rows.length; i++) {
+        const r=rows[i]; if (!r[1]&&!r[4]) continue;
+        parsed.push([String(r[1]||'').trim(),String(r[2]||'').trim(),String(r[3]||'').trim(),
+          String(r[4]||'').trim(),String(r[5]||'').trim(),
+          +r[7]||0,+r[8]||0,+r[9]||0,+r[10]||0,+r[11]||0,+r[12]||0]);
+      }
+      if (!parsed.length) { alert('Файл не містить даних.'); e.target.value=''; return; }
+      addSnapshot(label.trim(), labelToIso(label.trim()), parsed);
+      document.getElementById('customBadge').style.display='';
+      renderSnapList(); populateSelectors(); runCompare();
+      e.target.value='';
+    } catch(err) { alert('Помилка: '+err.message); e.target.value=''; }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+function doReset(e) {
+  e.preventDefault();
+  if (!hasCustomData()) { alert('Дані вже оригінальні.'); return; }
+  if (confirm('Видалити всі знімки та повернутися до початкових даних?')) { resetToDefault(); location.reload(); }
+}
+
+// ── init ────────────────────────────────────────────────────────────────────
+if (hasCustomData()) document.getElementById('customBadge').style.display='';
+renderSnapList();
+const _snaps = getAllSnapshots();
+if (_snaps.length < 2) {
+  document.getElementById('compareSel').style.display = 'none';
+  document.getElementById('mainPg').innerHTML = `<div class="no-data-hint">
+    <i class="bi bi-layers"></i>
+    <h3>Потрібно щонайменше два знімки</h3>
+    <p>Завантажте ще один Excel-файл через бокове меню,<br>щоб можна було порівнювати дані між датами.</p>
+  </div>`;
+} else {
+  populateSelectors();
+  runCompare();
+}
+</script>
+</body>
+</html>
