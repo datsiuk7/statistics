@@ -1032,7 +1032,7 @@ function updateCharts() {
   filteredData.forEach(r => { totFull += rowFull(r); totPart += rowPart(r); totEven += rowEven(r); });
   if (chartForm) chartForm.destroy();
   const formLabels = ['Денна', 'Заочна'];
-  const formData = [totFull, totPart];
+  const formData = [totFull, totPart, totEven];
   const formColors = ['#2c3e8c','#4a90d9'];
   if (totEven > 0) { formLabels.push('Вечірня'); formData.push(totEven); formColors.push('#9b59b6'); }
   chartForm = new Chart(document.getElementById('chartForm'), {
