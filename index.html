@@ -371,11 +371,18 @@ function doReset(e) {
 function applyFilters() {
   const deg  = document.getElementById('fDeg').value;
   const base = document.getElementById('fBase').value;
+  const form = document.getElementById('fForm').value; // Нове значення
   const spec = document.getElementById('fSpec').value.toLowerCase();
   filtered = allData.filter(r => {
-    if (deg  && r[0] !== deg)  return false;
+    if (deg && r[0] !== deg) return false;
     if (base && r[1] !== base) return false;
-    if (spec && !r[3].toLowerCase().includes(spec) && !r[2].toLowerCase().includes(spec)) return false;
+    if (spec && r[3] !== spec) return false;
+    
+    // Фільтр по формі навчання (перевірка чи є студенти в конкретних колонках)
+    if (form === 'full' && rowFull(r) === 0) return false;
+    if (form === 'part' && rowPart(r) === 0) return false;
+    if (form === 'even' && rowEven(r) === 0) return false;
+    
     return true;
   });
   updateKPIs();
@@ -385,6 +392,7 @@ function resetFilters() {
   document.getElementById('fDeg').value = '';
   document.getElementById('fBase').value = '';
   document.getElementById('fSpec').value = '';
+  document.getElementById('fForm').value = ''; // Очищення форми
   applyFilters();
 }
 
