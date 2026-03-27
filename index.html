@@ -444,6 +444,15 @@ function applyFilters() {
   
   // Якщо у тебе є функція оновлення таблиці (наприклад, renderTable), виклич її тут:
   if (typeof renderTable === 'function') renderTable();
+  
+  // Якщо ти хочеш, щоб пошук спрацьовував тільки при повному збігу або навпаки був гнучким,
+  // переконайся, що в твоєму applyFilters рядок пошуку працює через .includes():
+if (specInput) {
+    const rowSpec = String(r[3]).toLowerCase();
+    const rowCode = String(r[2]).toLowerCase();
+    // Шукаємо і в назві, і в коді
+    if (!rowSpec.includes(specInput) && !rowCode.includes(specInput)) return false;
+}
 }
   
 function resetFilters() {
