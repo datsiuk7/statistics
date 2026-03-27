@@ -561,15 +561,24 @@ function updateCharts() {
   mkDoughnut('cFunding', ['Бюджет', 'Контракт'], [totB, totC], ['#27ae60', '#C8A217']);
 
   // ── FORM (Форма навчання) ────────────────────────────────────────────────
-  // Тут ми рахуємо реальний розподіл, щоб діаграма показувала дані незалежно від фільтра "Форма"
-  let totF = 0, totP = 0, totE = 0;
-  filtered.forEach(r => { 
-    totF += (Number(r[5]) || 0) + (Number(r[6]) || 0); 
-    totP += (Number(r[7]) || 0) + (Number(r[8]) || 0); 
-    totE += (Number(r[9]) || 0) + (Number(r[10]) || 0); 
-  });
-  const fLbls = ['Денна', 'Заочна'], fDat = [totF, totP], fCol = ['#822020', '#b85858'];
-  if (totE > 0) { fLbls.push('Вечірня'); fDat.push(totE); fCol.push('#C8A217'); }
+  // 3. Форма навчання (cForm)
+  // Якщо вибрано конкретну форму, ця діаграма покаже 100% одного кольору
+  let fDat = [];
+  let fLbls = [];
+  let fCol = [];
+  
+  if (!selectedForm || selectedForm === 'full') {
+    let s = filtered.reduce((a,r) => a + (Number(r[5])||0) + (Number(r[6])||0), 0);
+    if(s>0) { fDat.push(s); fLbls.push('Денна'); fCol.push('#822020'); }
+  }
+  if (!selectedForm || selectedForm === 'part') {
+    let s = filtered.reduce((a,r) => a + (Number(r[7])||0) + (Number(r[8])||0), 0);
+    if(s>0) { fDat.push(s); fLbls.push('Заочна'); fCol.push('#b85858'); }
+  }
+  if (!selectedForm || selectedForm === 'even') {
+    let s = filtered.reduce((a,r) => a + (Number(r[9])||0) + (Number(r[10])||0), 0);
+    if(s>0) { fDat.push(s); fLbls.push('Вечірня'); fCol.push('#C8A217'); }
+  }
   mkDoughnut('cForm', fLbls, fDat, fCol);
 
   // ── TOP SPECIALTIES (Топ 15 спеціальностей) ──────────────────────────────
