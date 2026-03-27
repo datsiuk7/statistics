@@ -371,20 +371,32 @@ function doReset(e) {
 function applyFilters() {
   const deg  = document.getElementById('fDeg').value;
   const base = document.getElementById('fBase').value;
-  const form = document.getElementById('fForm').value; // Нове значення
-  const spec = document.getElementById('fSpec').value.toLowerCase();
+  const form = document.getElementById('fForm').value;
+  const specInput = document.getElementById('fSpec').value.toLowerCase();
+
   filtered = allData.filter(r => {
+    // 1. Фільтр за ступенем
     if (deg && r[0] !== deg) return false;
+
+    // 2. Фільтр за основою вступу
     if (base && r[1] !== base) return false;
-    if (spec && r[3] !== spec) return false;
+
+    // 3. Пошук за спеціальністю (назва або код)
+    if (specInput) {
+        const rowCode = String(r[2]).toLowerCase();
+        const rowSpec = String(r[3]).toLowerCase();
+        if (!rowCode.includes(specInput) && !rowSpec.includes(specInput)) return false;
+    }
     
-    // Фільтр по формі навчання (перевірка чи є студенти в конкретних колонках)
-    if (form === 'full' && rowFull(r) === 0) return false;
-    if (form === 'part' && rowPart(r) === 0) return false;
-    if (form === 'even' && rowEven(r) === 0) return false;
+    // 4. Фільтр за формою навчання
+    // Перевіряємо, чи є студенти на обраній формі
+    if (form === 'full' && (Number(r[5]) + Number(r[6])) === 0) return false;
+    if (form === 'part' && (Number(r[7]) + Number(r[8])) === 0) return false;
+    if (form === 'even' && (Number(r[9]) + Number(r[10])) === 0) return false;
     
     return true;
   });
+
   updateKPIs();
   updateCharts();
 }
