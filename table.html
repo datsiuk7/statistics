@@ -457,6 +457,7 @@ function applyFilters() {
   const deg  = document.getElementById('fDeg').value;
   const base = document.getElementById('fBase').value;
   const spec = document.getElementById('fSpec').value.toLowerCase();
+  const form = document.getElementById('fForm').value; // Нове значення
   filtered = allData
     .map((r, i) => ({ r, i }))
     .filter(({ r }) => {
@@ -475,6 +476,7 @@ function resetFilters() {
   document.getElementById('fDeg').value = '';
   document.getElementById('fBase').value = '';
   document.getElementById('fSpec').value = '';
+  document.getElementById('fForm').value = ''; // Очищення форми
   applyFilters();
 }
 
