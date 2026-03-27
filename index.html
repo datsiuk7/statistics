@@ -173,9 +173,22 @@ body {
         <label>Освітній ступінь</label>
         <select id="fDeg" onchange="applyFilters()">
           <option value="">Всі ступені</option>
-          <option>Бакалавр</option><option>Магістр</option><option>Доктор філософії</option>
+          <option>Бакалавр</option>
+          <option>Магістр</option>
+          <option>Доктор філософії</option>
         </select>
       </div>
+      
+      <!-- НОВИЙ ФІЛЬТР: Форма навчання -->
+  <div class="fg">
+    <label>Форма навчання</label>
+    <select id="fForm" onchange="applyFilters()">
+      <option value="">Всі форми</option>
+      <option value="full">Денна</option>
+      <option value="part">Заочна</option>
+      <option value="even">Вечірня</option>
+    </select>
+  </div>
       <div class="fg">
         <label>Основа вступу</label>
         <select id="fBase" onchange="applyFilters()">
@@ -186,6 +199,7 @@ body {
           <option>Бакалавр</option><option>Магістр</option>
         </select>
       </div>
+      
       <div class="fg" style="min-width:210px">
         <label>Спеціальність</label>
         <input id="fSpec" type="text" placeholder="Назва або код..." oninput="applyFilters()">
