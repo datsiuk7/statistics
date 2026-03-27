@@ -367,6 +367,24 @@ function doReset(e) {
   }
 }
 
+// Додай ці допоміжні функції перед applyFilters
+function getFilteredBudget(r, form) {
+  if (form === 'full') return Number(r[5]) || 0;
+  if (form === 'part') return Number(r[7]) || 0;
+  if (form === 'even') return Number(r[9]) || 0;
+  return (Number(r[5])||0) + (Number(r[7])||0) + (Number(r[9])||0);
+}
+
+function getFilteredContract(r, form) {
+  if (form === 'full') return Number(r[6]) || 0;
+  if (form === 'part') return Number(r[8]) || 0;
+  if (form === 'even') return Number(r[10]) || 0;
+  return (Number(r[6])||0) + (Number(r[8])||0) + (Number(r[10])||0);
+}
+
+function getFilteredTotal(r, form) {
+  return getFilteredBudget(r, form) + getFilteredContract(r, form);
+}
 // ── filters ──────────────────────────────────────────────────────────────────
 function applyFilters() {
   const deg = document.getElementById('fDeg').value;
@@ -417,14 +435,14 @@ function resetFilters() {
 
 // ── KPIs ─────────────────────────────────────────────────────────────────────
 function updateKPIs() {
+  const selectedForm = document.getElementById('fForm').value;
   let tot = 0, bud = 0, con = 0;
   let ful = 0, par = 0, evn = 0;
   const specs = new Set();
-  const selectedForm = document.getElementById('fForm').value;
+  
 
   filtered.forEach(r => {
     let rowB = 0, rowC = 0;
-
     // Рахуємо бюджет/контракт залежно від фільтра
     if (selectedForm === 'full') {
       rowB = Number(r[5]) || 0;
@@ -441,21 +459,28 @@ function updateKPIs() {
       rowC = (Number(r[6])||0) + (Number(r[8])||0) + (Number(r[10])||0);
     }
 
-    bud += rowB;
-    con += rowC;
-    tot += (rowB + rowC);
+   const b = getFilteredBudget(r, selectedForm);
+    const c = getFilteredContract(r, selectedForm);
+    const t = b + c;
 
-    // Ці показники завжди рахують загальну кількість по формах для довідки
-    ful += (Number(r[5])||0) + (Number(r[6])||0);
-    par += (Number(r[7])||0) + (Number(r[8])||0);
-    evn += (Number(r[9])||0) + (Number(r[10])||0);
+    if (t > 0) {
+      bud += b;
+      con += c;
+      tot += t;
+      specs.add(r[2] + r[3]);
+      
+      // Накопичуємо статистику по формах ТІЛЬКИ якщо вони дозволені фільтром
+      if (!selectedForm || selectedForm === 'full') ful += (Number(r[5])||0) + (Number(r[6])||0);
+      if (!selectedForm || selectedForm === 'part') par += (Number(r[7])||0) + (Number(r[8])||0);
+      if (!selectedForm || selectedForm === 'even') evn += (Number(r[9])||0) + (Number(r[10])||0);
+    }
 
     if (rowB + rowC > 0) specs.add(r[2] + r[3]);
   });
 
   const p = v => tot ? Math.round(v/tot*100) + '%' : '0%';
+  
   const fmt = v => v.toLocaleString('uk-UA');
-
   document.getElementById('kTotal').textContent    = fmt(tot);
   document.getElementById('kBudget').textContent   = fmt(bud);
   document.getElementById('kContract').textContent = fmt(con);
