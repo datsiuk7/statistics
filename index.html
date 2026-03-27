@@ -194,7 +194,7 @@ body {
     </select>
   </div>
       
-      <!-- <div class="fg">
+       <!-- <div class="fg">
         <label>Основа вступу</label>
         <select id="fBase" onchange="applyFilters()">
           <option value="">Всі основи</option>
@@ -203,7 +203,7 @@ body {
           <option>Фаховий молодший бакалавр</option>
           <option>Бакалавр</option><option>Магістр</option>
         </select>
-      </div> -->
+      </div>  -->
       
     <div class="fg" style="min-width:210px">
   <label>Спеціальність</label>
@@ -413,7 +413,7 @@ function getFilteredTotal(r, form) {
 // ── filters ──────────────────────────────────────────────────────────────────
 function applyFilters() {
   const deg = document.getElementById('fDeg').value;
-  const base = document.getElementById('fBase').value;
+  // const base = document.getElementById('fBase').value; 
   const form = document.getElementById('fForm').value;
   const specInput = document.getElementById('fSpec').value.toLowerCase();
 
@@ -422,7 +422,7 @@ function applyFilters() {
     if (deg && r[0] !== deg) return false;
 
     // Фільтр за основою вступу
-    if (base && r[1] !== base) return false;
+  //  if (base && r[1] !== base) return false;
 
     // Пошук за спеціальністю
     if (specInput) {
@@ -461,7 +461,7 @@ if (specInput) {
   
 function resetFilters() {
   document.getElementById('fDeg').value = '';
-  document.getElementById('fBase').value = '';
+  //document.getElementById('fBase').value = '';
   document.getElementById('fSpec').value = '';
   document.getElementById('fForm').value = ''; // Очищення форми
   applyFilters();
