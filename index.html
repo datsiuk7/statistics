@@ -205,13 +205,10 @@ body {
         </select>
       </div>  -->
       
-    <!-- <div class="fg" style="min-width:210px">
-  <label>Спеціальність</label>
-   Додаємо атрибут list="specList"
-  <input id="fSpec" type="text" list="specList" placeholder="Назва або код..." oninput="applyFilters()">
- Створюємо контейнер для підказок 
-  <datalist id="specList"></datalist>
-    </div> -->
+  <div class="fg" style="min-width:210px">
+        <label>Спеціальність</label>
+        <input id="fSpec" type="text" placeholder="Назва або код..." oninput="applyFilters()">
+      </div>
 
       <button class="fbtn rst" onclick="resetFilters()"><i class="bi bi-x-lg"></i> Скинути</button>
     </div>
@@ -304,23 +301,8 @@ function switchSnap(id) {
   applyFilters();
   updateDynamics();
 }
-// function updateSpecSuggestions() {
-//   const specList = document.getElementById('specList');
-  
-//   // Отримуємо унікальні назви спеціальностей з усіх даних (allData)
-//   // Використовуємо Set для унікальності
-//   const uniqueSpecs = [...new Set(allData.map(r => r[3]))].sort();
 
-//   // Очищуємо список і додаємо нові опції
-//   specList.innerHTML = uniqueSpecs
-//     .map(name => `<option value="${name}">`)
-//     .join('');
-// }
-  // Додай цей виклик там, де ініціалізуються дані
-allData = getData(); 
-updateSpecSuggestions(); // Оновлюємо підказки при старті
-renderSnapList();
-applyFilters();
+
 function deleteSnap(id) {
   const snaps = getAllSnapshots();
   const snap = snaps.find(s => s.id === id);
@@ -447,16 +429,8 @@ function applyFilters() {
   updateCharts();
   
   // Якщо у тебе є функція оновлення таблиці (наприклад, renderTable), виклич її тут:
-  if (typeof renderTable === 'function') renderTable();
-  
-  // Якщо ти хочеш, щоб пошук спрацьовував тільки при повному збігу або навпаки був гнучким,
-  // переконайся, що в твоєму applyFilters рядок пошуку працює через .includes():
-if (specInput) {
-    const rowSpec = String(r[3]).toLowerCase();
-    const rowCode = String(r[2]).toLowerCase();
-    // Шукаємо і в назві, і в коді
-    if (!rowSpec.includes(specInput) && !rowCode.includes(specInput)) return false;
-}
+  if (typeof renderTable === 'function') renderTable(); 
+ 
 }
   
 function resetFilters() {
