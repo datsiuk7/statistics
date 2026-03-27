@@ -482,86 +482,110 @@ function mkDoughnut(id, labels, data, colors) {
 
 function updateCharts() {
   const selectedForm = document.getElementById('fForm').value;
+
+  // 1. Локальні "розумні" функції, що враховують фільтр форми навчання
   const getB = r => {
     if (selectedForm === 'full') return Number(r[5]) || 0;
     if (selectedForm === 'part') return Number(r[7]) || 0;
     if (selectedForm === 'even') return Number(r[9]) || 0;
-    return (Number(r[5])||0) + (Number(r[7])||0) + (Number(r[9])||0);
+    return (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0);
   };
 
   const getC = r => {
     if (selectedForm === 'full') return Number(r[6]) || 0;
     if (selectedForm === 'part') return Number(r[8]) || 0;
     if (selectedForm === 'even') return Number(r[10]) || 0;
-    return (Number(r[6])||0) + (Number(r[8])||0) + (Number(r[10])||0);
+    return (Number(r[6]) || 0) + (Number(r[8]) || 0) + (Number(r[10]) || 0);
   };
 
   const getT = r => getB(r) + getC(r);
-  // by degree
-  // ── BY DEGREE (Ступені) ───────────────────────────────────────────────────
+
+  // ── BY DEGREE (Освітній ступінь) ─────────────────────────────────────────
   const degMap = {};
-  filtered.forEach(r => { degMap[r[0]] = (degMap[r[0]]||0) + rowTotal(r); });
+  filtered.forEach(r => { 
+    const val = getT(r);
+    if (val > 0) degMap[r[0]] = (degMap[r[0]] || 0) + val; 
+  });
   const dKeys = Object.keys(degMap);
-  
+
   if (charts.cDegree) charts.cDegree.destroy();
   charts.cDegree = new Chart(document.getElementById('cDegree'), {
     type: 'bar',
-    data: { labels: dKeys, datasets: [{ data: dKeys.map(k => degMap[k]),
-      backgroundColor: ['#822020','#27ae60','#C8A217'].slice(0, dKeys.length),
-      borderRadius: 6, borderSkipped: false }] },
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label: ctx => ' ' + ctx.parsed.y.toLocaleString('uk-UA') + ' осіб' } } },
-      scales: { y:{ beginAtZero:true, grid:{ color:'#f0f0f5' }, ticks:{ font:{ size:11 } } },
-                x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } } }
+    data: { 
+      labels: dKeys, 
+      datasets: [{ 
+        data: dKeys.map(k => degMap[k]),
+        backgroundColor: ['#822020', '#27ae60', '#C8A217'].slice(0, dKeys.length),
+        borderRadius: 6, borderSkipped: false 
+      }] 
+    },
+    options: { 
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString('uk-UA') + ' осіб' } } },
+      scales: { y: { beginAtZero: true, grid: { color: '#f0f0f5' } }, x: { grid: { display: false } } }
+    }
   });
-  
-// ── FUNDING (Бюджет/Контракт) ──────────────────────────────────────────────
-  let totB=0, totC=0;
+
+  // ── FUNDING (Бюджет / Контракт) ──────────────────────────────────────────
+  let totB = 0, totC = 0;
+  filtered.forEach(r => { totB += getB(r); totC += getC(r); });
+  mkDoughnut('cFunding', ['Бюджет', 'Контракт'], [totB, totC], ['#27ae60', '#C8A217']);
+
+  // ── FORM (Форма навчання) ────────────────────────────────────────────────
+  // Тут ми рахуємо реальний розподіл, щоб діаграма показувала дані незалежно від фільтра "Форма"
+  let totF = 0, totP = 0, totE = 0;
   filtered.forEach(r => { 
-    totB += rowBudget(r); 
-    totC += rowContract(r); });
-  mkDoughnut('cFunding', ['Бюджет','Контракт'], [totB, totC], ['#27ae60','#C8A217']);
-  
-// ── FORM (Цю діаграму краще залишити як є, щоб бачити розподіл навіть при фільтрі) ──
-  let totF=0, totP=0, totE=0;
-  filtered.forEach(r => { totF += getB(r) + getC(r); totP += rowPart(r); totE += rowEven(r); });
-  const fLbls = ['Денна','Заочна'], fDat = [totF, totP], fCol = ['#822020','#b85858'];
+    totF += (Number(r[5]) || 0) + (Number(r[6]) || 0); 
+    totP += (Number(r[7]) || 0) + (Number(r[8]) || 0); 
+    totE += (Number(r[9]) || 0) + (Number(r[10]) || 0); 
+  });
+  const fLbls = ['Денна', 'Заочна'], fDat = [totF, totP], fCol = ['#822020', '#b85858'];
   if (totE > 0) { fLbls.push('Вечірня'); fDat.push(totE); fCol.push('#C8A217'); }
   mkDoughnut('cForm', fLbls, fDat, fCol);
 
-  // ── TOP SPECIALTIES (Топ спеціальностей) ────────────────────────────────────
+  // ── TOP SPECIALTIES (Топ 15 спеціальностей) ──────────────────────────────
   const specMap = {};
   filtered.forEach(r => {
-    if (!specMap[r[3]]) specMap[r[3]] = { b:0, c:0 };
-    specMap[r[3]].b += rowBudget(r); 
-    specMap[r[3]].c += rowContract(r);
+    const b = getB(r), c = getC(r);
+    if (b + c > 0) {
+      if (!specMap[r[3]]) specMap[r[3]] = { b: 0, c: 0 };
+      specMap[r[3]].b += b; specMap[r[3]].c += c;
+    }
   });
-  const top = Object.entries(specMap).map(([n,v]) => ({ n, t:v.b+v.c, b:v.b, c:v.c }))
-    .sort((a,b) => b.t - a.t).slice(0, 15);
-  const sh = s => s.length > 36 ? s.slice(0,34)+'…' : s;
-  
+  const top = Object.entries(specMap).map(([n, v]) => ({ n, t: v.b + v.c, b: v.b, c: v.c }))
+    .sort((a, b) => b.t - a.t).slice(0, 15);
+  const sh = s => s.length > 36 ? s.slice(0, 34) + '…' : s;
+
   if (charts.cTopSpec) charts.cTopSpec.destroy();
   charts.cTopSpec = new Chart(document.getElementById('cTopSpec'), {
     type: 'bar',
-    data: { labels: top.map(x => sh(x.n)),
+    data: { 
+      labels: top.map(x => sh(x.n)),
       datasets: [
-        { label:'Бюджет',   data: top.map(x => x.b), backgroundColor:'#27ae60', borderRadius:4 },
-        { label:'Контракт', data: top.map(x => x.c), backgroundColor:'#C8A217', borderRadius:4 }
-      ] },
-    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins: { legend:{ position:'top', labels:{ font:{ size:11 } } },
-        tooltip:{ callbacks:{ label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString('uk-UA') } } },
-      scales: { x:{ stacked:true, grid:{ color:'#f0f0f5' }, ticks:{ font:{ size:11 } } },
-                y:{ stacked:true, grid:{ display:false }, ticks:{ font:{ size:11 } } } } }
+        { label: 'Бюджет', data: top.map(x => x.b), backgroundColor: '#27ae60', borderRadius: 4 },
+        { label: 'Контракт', data: top.map(x => x.c), backgroundColor: '#C8A217', borderRadius: 4 }
+      ] 
+    },
+    options: { 
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { 
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString('uk-UA') } } 
+      },
+      scales: { x: { stacked: true }, y: { stacked: true, grid: { display: false } } }
+    }
   });
 
+  // ── BASE (Основа вступу) ─────────────────────────────────────────────────
   const baseMap = {};
-  filtered.forEach(r => { baseMap[r[1]] = (baseMap[r[1]]||0) + rowTotal(r); });
+  filtered.forEach(r => { 
+    const val = getT(r);
+    if (val > 0) baseMap[r[1]] = (baseMap[r[1]] || 0) + val; 
+  });
   const bKeys = Object.keys(baseMap);
   mkDoughnut('cBase', bKeys, bKeys.map(k => baseMap[k]),
-    ['#822020','#b85858','#27ae60','#C8A217','#8e44ad'].slice(0, bKeys.length));
+    ['#822020', '#b85858', '#27ae60', '#C8A217', '#8e44ad'].slice(0, bKeys.length));
 }
-
 // ── Dynamics ─────────────────────────────────────────────────────────────────
 function mkDynBar(id, labels, datasets, opts = {}) {
   if (dynCharts[id]) dynCharts[id].destroy();
