@@ -481,10 +481,28 @@ function mkDoughnut(id, labels, data, colors) {
 }
 
 function updateCharts() {
+  const selectedForm = document.getElementById('fForm').value;
+  const getB = r => {
+    if (selectedForm === 'full') return Number(r[5]) || 0;
+    if (selectedForm === 'part') return Number(r[7]) || 0;
+    if (selectedForm === 'even') return Number(r[9]) || 0;
+    return (Number(r[5])||0) + (Number(r[7])||0) + (Number(r[9])||0);
+  };
+
+  const getC = r => {
+    if (selectedForm === 'full') return Number(r[6]) || 0;
+    if (selectedForm === 'part') return Number(r[8]) || 0;
+    if (selectedForm === 'even') return Number(r[10]) || 0;
+    return (Number(r[6])||0) + (Number(r[8])||0) + (Number(r[10])||0);
+  };
+
+  const getT = r => getB(r) + getC(r);
   // by degree
+  // ── BY DEGREE (Ступені) ───────────────────────────────────────────────────
   const degMap = {};
   filtered.forEach(r => { degMap[r[0]] = (degMap[r[0]]||0) + rowTotal(r); });
   const dKeys = Object.keys(degMap);
+  
   if (charts.cDegree) charts.cDegree.destroy();
   charts.cDegree = new Chart(document.getElementById('cDegree'), {
     type: 'bar',
@@ -496,25 +514,32 @@ function updateCharts() {
       scales: { y:{ beginAtZero:true, grid:{ color:'#f0f0f5' }, ticks:{ font:{ size:11 } } },
                 x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } } }
   });
-
+  
+// ── FUNDING (Бюджет/Контракт) ──────────────────────────────────────────────
   let totB=0, totC=0;
-  filtered.forEach(r => { totB += rowBudget(r); totC += rowContract(r); });
+  filtered.forEach(r => { 
+    totB += rowBudget(r); 
+    totC += rowContract(r); });
   mkDoughnut('cFunding', ['Бюджет','Контракт'], [totB, totC], ['#27ae60','#C8A217']);
-
+  
+// ── FORM (Цю діаграму краще залишити як є, щоб бачити розподіл навіть при фільтрі) ──
   let totF=0, totP=0, totE=0;
   filtered.forEach(r => { totF += rowFull(r); totP += rowPart(r); totE += rowEven(r); });
   const fLbls = ['Денна','Заочна'], fDat = [totF, totP], fCol = ['#822020','#b85858'];
   if (totE > 0) { fLbls.push('Вечірня'); fDat.push(totE); fCol.push('#C8A217'); }
   mkDoughnut('cForm', fLbls, fDat, fCol);
 
+  // ── TOP SPECIALTIES (Топ спеціальностей) ────────────────────────────────────
   const specMap = {};
   filtered.forEach(r => {
     if (!specMap[r[3]]) specMap[r[3]] = { b:0, c:0 };
-    specMap[r[3]].b += rowBudget(r); specMap[r[3]].c += rowContract(r);
+    specMap[r[3]].b += rowBudget(r); 
+    specMap[r[3]].c += rowContract(r);
   });
   const top = Object.entries(specMap).map(([n,v]) => ({ n, t:v.b+v.c, b:v.b, c:v.c }))
     .sort((a,b) => b.t - a.t).slice(0, 15);
   const sh = s => s.length > 36 ? s.slice(0,34)+'…' : s;
+  
   if (charts.cTopSpec) charts.cTopSpec.destroy();
   charts.cTopSpec = new Chart(document.getElementById('cTopSpec'), {
     type: 'bar',
