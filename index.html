@@ -415,21 +415,21 @@ function applyFilters() {
   const deg = document.getElementById('fDeg').value;
   // const base = document.getElementById('fBase').value; 
   const form = document.getElementById('fForm').value;
-  const specInput = document.getElementById('fSpec').value.toLowerCase();
+ // const specInput = document.getElementById('fSpec').value.toLowerCase();
 
   filtered = allData.filter(r => {
-    // Фільтр за ступенем
+    // Фільтр за рівнем освіти (Бакалавр/Магістр)
     if (deg && r[0] !== deg) return false;
 
     // Фільтр за основою вступу
   //  if (base && r[1] !== base) return false;
 
     // Пошук за спеціальністю
-    if (specInput) {
-      const rowCode = String(r[2]).toLowerCase();
-      const rowSpec = String(r[3]).toLowerCase();
-      if (!rowCode.includes(specInput) && !rowSpec.includes(specInput)) return false;
-    }
+    // if (specInput) {
+    //   const rowCode = String(r[2]).toLowerCase();
+    //   const rowSpec = String(r[3]).toLowerCase();
+    //   if (!rowCode.includes(specInput) && !rowSpec.includes(specInput)) return false;
+    // }
     
     // Фільтр за формою навчання (рахуємо суму конкретних колонок)
     if (form === 'full') {
@@ -462,7 +462,7 @@ if (specInput) {
 function resetFilters() {
   document.getElementById('fDeg').value = '';
   //document.getElementById('fBase').value = '';
-  document.getElementById('fSpec').value = '';
+  //document.getElementById('fSpec').value = '';
   document.getElementById('fForm').value = ''; // Очищення форми
   applyFilters();
 }
