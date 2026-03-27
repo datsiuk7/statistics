@@ -201,10 +201,14 @@ body {
         </select>
       </div>
       
-      <div class="fg" style="min-width:210px">
-        <label>Спеціальність</label>
-        <input id="fSpec" type="text" placeholder="Назва або код..." oninput="applyFilters()">
-      </div>
+   <div class="fg" style="min-width:210px">
+  <label>Спеціальність</label>
+  <!-- Додаємо атрибут list="specList" -->
+  <input id="fSpec" type="text" list="specList" placeholder="Назва або код..." oninput="applyFilters()">
+  <!-- Створюємо контейнер для підказок -->
+  <datalist id="specList"></datalist>
+    </div>
+      
       <button class="fbtn rst" onclick="resetFilters()"><i class="bi bi-x-lg"></i> Скинути</button>
     </div>
 
@@ -296,7 +300,23 @@ function switchSnap(id) {
   applyFilters();
   updateDynamics();
 }
+function updateSpecSuggestions() {
+  const specList = document.getElementById('specList');
+  
+  // Отримуємо унікальні назви спеціальностей з усіх даних (allData)
+  // Використовуємо Set для унікальності
+  const uniqueSpecs = [...new Set(allData.map(r => r[3]))].sort();
 
+  // Очищуємо список і додаємо нові опції
+  specList.innerHTML = uniqueSpecs
+    .map(name => `<option value="${name}">`)
+    .join('');
+}
+  // Додай цей виклик там, де ініціалізуються дані
+allData = getData(); 
+updateSpecSuggestions(); // Оновлюємо підказки при старті
+renderSnapList();
+applyFilters();
 function deleteSnap(id) {
   const snaps = getAllSnapshots();
   const snap = snaps.find(s => s.id === id);
@@ -533,7 +553,7 @@ function mkDoughnut(id, labels, data, colors) {
         },
         // НАЛАШТУВАННЯ ВІДСОТКІВ НА ГРАФІКУ
         datalabels: {
-          color: '#f5f',
+          color: '#fff',
           font: { weight: 'bold', size: 12 },
           formatter: (value) => {
             if (value === 0 || total === 0) return null; // Не показуємо 0%
@@ -543,7 +563,7 @@ function mkDoughnut(id, labels, data, colors) {
           // Відображати тільки якщо сегмент достатньо великий
           display: (ctx) => {
             let val = ctx.dataset.data[ctx.dataIndex];
-            return (val / total) > 0.05; // показувати якщо більше 5%
+            return (val / total) > 0.02; // показувати якщо більше 5%
           }
         }
       } 
