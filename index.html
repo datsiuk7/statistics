@@ -213,7 +213,6 @@ body {
   <datalist id="specList"></datalist>
     </div> -->
 
-    
       <button class="fbtn rst" onclick="resetFilters()"><i class="bi bi-x-lg"></i> Скинути</button>
     </div>
 
@@ -305,18 +304,18 @@ function switchSnap(id) {
   applyFilters();
   updateDynamics();
 }
-function updateSpecSuggestions() {
-  const specList = document.getElementById('specList');
+// function updateSpecSuggestions() {
+//   const specList = document.getElementById('specList');
   
-  // Отримуємо унікальні назви спеціальностей з усіх даних (allData)
-  // Використовуємо Set для унікальності
-  const uniqueSpecs = [...new Set(allData.map(r => r[3]))].sort();
+//   // Отримуємо унікальні назви спеціальностей з усіх даних (allData)
+//   // Використовуємо Set для унікальності
+//   const uniqueSpecs = [...new Set(allData.map(r => r[3]))].sort();
 
-  // Очищуємо список і додаємо нові опції
-  specList.innerHTML = uniqueSpecs
-    .map(name => `<option value="${name}">`)
-    .join('');
-}
+//   // Очищуємо список і додаємо нові опції
+//   specList.innerHTML = uniqueSpecs
+//     .map(name => `<option value="${name}">`)
+//     .join('');
+// }
   // Додай цей виклик там, де ініціалізуються дані
 allData = getData(); 
 updateSpecSuggestions(); // Оновлюємо підказки при старті
