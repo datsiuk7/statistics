@@ -456,17 +456,29 @@ function addRow() {
 function applyFilters() {
   const deg  = document.getElementById('fDeg').value;
   const base = document.getElementById('fBase').value;
-  const spec = document.getElementById('fSpec').value.toLowerCase();
-  const form = document.getElementById('fForm').value; // Нове значення
+  const spec = document.getElementById('fSpec').value; // Тепер тут буде точне значення зі списку
+  const form = document.getElementById('fForm').value;
+
   filtered = allData
     .map((r, i) => ({ r, i }))
     .filter(({ r }) => {
-      if (deg  && r[0] !== deg)  return false;
+      // 1. Фільтр по ступеню
+      if (deg && r[0] !== deg) return false;
+      
+      // 2. Фільтр по основі вступу
       if (base && r[1] !== base) return false;
-      if (spec && !r[3].toLowerCase().includes(spec) && !r[2].toLowerCase().includes(spec)
-               && !r[4].toLowerCase().includes(spec)) return false;
+      
+      // 3. Фільтр по спеціальності (точний збіг)
+      if (spec && r[3] !== spec) return false;
+      
+      // 4. ЛОГІКА ФОРМИ НАВЧАННЯ (Перевіряємо суму відповідних колонок)
+      if (form === 'full' && (r[5] + r[6]) === 0) return false; // Денна (бюджет + контракт)
+      if (form === 'part' && (r[7] + r[8]) === 0) return false; // Заочна (бюджет + контракт)
+      if (form === 'even' && (r[9] + r[10]) === 0) return false; // Вечірня (бюджет + контракт)
+      
       return true;
     });
+
   if (sortKey) doSort(sortKey, false);
   curPage = 1;
   render();
