@@ -410,12 +410,43 @@ function resetFilters() {
 
 // ── KPIs ─────────────────────────────────────────────────────────────────────
 function updateKPIs() {
-  let tot=0, bud=0, con=0, ful=0, par=0, evn=0;
+  let tot = 0, bud = 0, con = 0, ful = 0, par = 0, evn = 0;
   const specs = new Set();
+// 1. Отримуємо значення фільтра форми навчання
+  const selectedForm = document.getElementById('fForm').value;
+
   filtered.forEach(r => {
-    tot += rowTotal(r); bud += rowBudget(r); con += rowContract(r);
-    ful += rowFull(r);  par += rowPart(r);   evn += rowEven(r);
-    specs.add(r[2]+r[3]);
+    // Тимчасові змінні для поточного рядка
+    let rowB = 0; // бюджет у цьому рядку (з врахуванням фільтра)
+    let rowC = 0; // контракт у цьому рядку (з врахуванням фільтра)
+
+    // 2. Логіка вибору колонок залежно від фільтра
+    if (selectedForm === 'full') {
+      rowB = Number(r[5]) || 0;
+      rowC = Number(r[6]) || 0;
+    } else if (selectedForm === 'part') {
+      rowB = Number(r[7]) || 0;
+      rowC = Number(r[8]) || 0;
+    } else if (selectedForm === 'even') {
+      rowB = Number(r[9]) || 0;
+      rowC = Number(r[10]) || 0;
+    } else {
+      // Якщо обрано "Всі форми" (порожньо), додаємо все
+      rowB = (Number(r[5])||0) + (Number(r[7])||0) + (Number(r[9])||0);
+      rowC = (Number(r[6])||0) + (Number(r[8])||0) + (Number(r[10])||0);
+    }
+
+    // 3. Накопичуємо суми для карток
+    bud += rowB;
+    con += rowC;
+    tot += (rowB + rowC);
+
+    // Окремі лічильники для карток форм (завжди повні дані)
+    ful += (Number(r[5])||0) + (Number(r[6])||0);
+    par += (Number(r[7])||0) + (Number(r[8])||0);
+    evn += (Number(r[9])||0) + (Number(r[10])||0);
+
+    specs.add(r[2] + r[3]);
   });
   const p = v => tot ? Math.round(v/tot*100) + '% від загального' : '0%';
   const fmt = v => v.toLocaleString('uk-UA');
@@ -425,8 +456,10 @@ function updateKPIs() {
   document.getElementById('kFull').textContent     = fmt(ful);
   document.getElementById('kPart').textContent     = fmt(par);
   document.getElementById('kEven').textContent     = fmt(evn);
+  
   document.getElementById('kSpec').textContent     = specs.size;
   document.getElementById('kTotalS').textContent    = filtered.length + ' рядків';
+  
   document.getElementById('kBudgetS').textContent   = p(bud);
   document.getElementById('kContractS').textContent = p(con);
   document.getElementById('kFullS').textContent     = p(ful);
