@@ -524,7 +524,7 @@ function updateCharts() {
   
 // ── FORM (Цю діаграму краще залишити як є, щоб бачити розподіл навіть при фільтрі) ──
   let totF=0, totP=0, totE=0;
-  filtered.forEach(r => { totF += rowFull(r); totP += rowPart(r); totE += rowEven(r); });
+  filtered.forEach(r => { totF += getB(r) + getC(r); totP += rowPart(r); totE += rowEven(r); });
   const fLbls = ['Денна','Заочна'], fDat = [totF, totP], fCol = ['#822020','#b85858'];
   if (totE > 0) { fLbls.push('Вечірня'); fDat.push(totE); fCol.push('#C8A217'); }
   mkDoughnut('cForm', fLbls, fDat, fCol);
