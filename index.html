@@ -164,7 +164,7 @@ body {
 
 <div class="main">
   <header class="topbar">
-    <h1><i class="bi bi-mortarboard" style="margin-right:8px;opacity:.6"></i>Здобувачі освіти — Волинська область</h1>
+    <h1><i class="bi bi-mortarboard" style="margin-right:8px;opacity:.6"></i>Здобувачі освіти — Волинський національний університет імені Лесі Українки</h1>
     <div class="snap-badge" id="activeBadge"><i class="bi bi-calendar3"></i> <span id="activeLabel">01.01.2026</span></div>
   </header>
 
@@ -174,7 +174,7 @@ body {
     <div class="fbar">
       
       <div class="fg">
-        <label>Освітній ступінь</label>
+        <label>Освітній рівень</label>
         <select id="fDeg" onchange="applyFilters()">
           <option value="">Всі ступені</option>
           <option>Бакалавр</option>
@@ -185,7 +185,7 @@ body {
       
       <!-- НОВИЙ ФІЛЬТР: Форма навчання -->
   <div class="fg">
-    <label>Форма навчання</label>
+    <label>Форма здобуття освіти</label>
     <select id="fForm" onchange="applyFilters()">
       <option value="">Всі форми</option>
       <option value="full">Денна</option>
@@ -228,12 +228,12 @@ body {
     <div class="charts-grid">
       <div class="chart-card"><div class="ct">Освітній ступінь</div><div class="cs">Розподіл за рівнем навчання</div><div class="cw" style="height:220px"><canvas id="cDegree"></canvas></div></div>
       <div class="chart-card"><div class="ct">Бюджет / Контракт</div><div class="cs">Джерело фінансування</div><div class="cw" style="height:220px"><canvas id="cFunding"></canvas></div></div>
-      <div class="chart-card"><div class="ct">Форма навчання</div><div class="cs">Денна, заочна, вечірня</div><div class="cw" style="height:220px"><canvas id="cForm"></canvas></div></div>
+      <div class="chart-card"><div class="ct">Форма здобуття освіти</div><div class="cs">Денна, заочна, вечірня</div><div class="cw" style="height:220px"><canvas id="cForm"></canvas></div></div>
     </div>
 
     <!-- Charts row 2 -->
     <div class="charts-grid-2">
-      <div class="chart-card"><div class="ct">Топ спеціальностей</div><div class="cs">Бюджет та контракт (перші 15)</div><div class="cw" style="height:380px"><canvas id="cTopSpec"></canvas></div></div>
+      <div class="chart-card"><div class="ct">Топ спеціальностей</div><div class="cs"> У розрізі джерел фінансування (перші 15)</div><div class="cw" style="height:380px"><canvas id="cTopSpec"></canvas></div></div>
       <div class="chart-card"><div class="ct">Основа вступу</div><div class="cs">Освітньо-кваліфікаційний рівень</div><div class="cw" style="height:380px"><canvas id="cBase"></canvas></div></div>
     </div>
 
